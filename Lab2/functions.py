@@ -27,3 +27,9 @@ def f4(n):
         return 1
     else:
         return 2*f4(n/4)+n*n
+
+def MM(n):
+    if (n <= 1):
+        return 1
+    else:
+        return 2*MM(n/2)+n^2

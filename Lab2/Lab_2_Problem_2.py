@@ -1,4 +1,6 @@
 import numpy as np
+import time
+import matplotlib.pyplot as plt
 def recursivematrixmultiply(a, b):
     if (np.shape(a)[1] != np.shape(b)[0]):
         SystemExit()
@@ -36,6 +38,19 @@ def recursivematrixmultiply(a, b):
         C[cSplitX:Cr, cSplitY:CC] = recursivematrixmultiply(A21, B12) + recursivematrixmultiply(A22, B22)
     return C
 
+def lab1MM(A, B):
+    if (np.shape(A)[1] != np.shape(B)[0]):
+        return -1
+    Ar, Ac = np.shape(A)
+    Br, Bc = np.shape(B)
+    C = np.zeros((Ar, Bc))
+    for row in range(Ar):
+        for col in range(Bc):
+            sum_ = 0
+            for i in range(Ac):
+                sum_ += A[row, i] * B[i, col]
+            C[row, col] = sum_
+    return C
 
 
 def MM(A, B):
@@ -44,11 +59,57 @@ def MM(A, B):
     C = np.zeros((np.shape(A)[0], np.shape(B)[1]))
     return recursivematrixmultiply(A, B)
 
-a = np.random.rand(4,4)
-a = np.matrix(np.random.rand(13,41))
-b = np.random.rand(4,4)
-b = np.matrix(np.random.rand(41,11))
-print(MM(a, b))
-print(a*b);
-print(np.array_equal(np.round(MM(a, b)),np.round(a*b)))
-b=1
+ar = int(input("Enter A rows value\n"))
+ac = int(input("Enter A columns value\n"))
+br = int(input("Enter B rows value\n"))
+bc = int(input("Enter B columns value\n"))
+
+
+a = np.matrix(np.random.rand(ar,ac))
+
+b = np.matrix(np.random.rand(br,bc))
+
+startTime = time.time()
+myP = MM(a, b)
+myTime = time.time() -startTime
+startTime = time.time()
+npP = a*b
+npTime = time.time()-startTime
+
+
+if(np.array_equal(np.round(myP*1000),np.round(npP*1000))):
+    print("Mine took: " + str(myTime)+" seconds")
+    print("Numpy took: " + str(npTime) + " seconds")
+else:
+    print("Product was incorrect")
+
+n = 1
+myTimes = []
+npTimes = []
+sizes = []
+for i in range(8):
+    a = np.matrix(np.random.rand(n, n))
+
+    b = np.matrix(np.random.rand(n, n))
+
+    startTime = time.time()
+    myP = MM(a, b)
+    myTime = time.time()-startTime
+    startTime = time.time()
+    npP = a * b
+    npTime = time.time() - startTime
+    if not np.array_equal(np.round(npP*1000), np.round(myP*1000)):
+        continue
+    myTimes.append(myTime)
+    npTimes.append(npTime)
+    sizes.append(n)
+    print("finished size " + str(n))
+    n = n * 2
+
+plt.plot(sizes, myTimes)
+#plt.plot(sizes, npTimes)
+plt.xlabel("n")
+plt.ylabel("time(s)")
+plt.title("My recursive Matrix Multiplication in python")
+plt.show()
+plt.figure()
