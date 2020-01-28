@@ -2,40 +2,49 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 def recursivematrixmultiply(a, b):
+
+    #Check that matrix shapes are valid for multiplication
     if (np.shape(a)[1] != np.shape(b)[0]):
+        print("Given matrix sizes cannot be multiplied together")
         SystemExit()
 
-    ar, ac = np.shape(a)
-    br, bc = np.shape(b)
-    C = np.matrix(np.zeros((ar, bc)))
-    Cr = ar
-    CC= bc
+    aRows, aCols = np.shape(a)
+    bRows, bCols = np.shape(b)
+    C = np.matrix(np.zeros((aRows, bCols)))
+    cRows = aRows
+    cCols= bCols
     if(np.size(a) == 1):
         C = a[0,0]*b
         return C
     elif(np.size(b)==1):
         C = a*b[0,0]
-    elif(ar*ac*br*bc == 0):
+    elif(aRows * aCols * bRows * bCols == 0):
         return C
     else:
-        aSplitX = ar//2 # what value to divide by rows for
-        aSplitY = ac//2 # the value to
-        bSplitX = aSplitY
-        bSplitY = aSplitX
-        cSplitX, cSplitY = aSplitX, bSplitY
-        A11 = a[0:aSplitX, 0:aSplitY]
-        A12 = a[0:aSplitX, aSplitY:ac]
-        A21 = a[aSplitX:ar, 0:aSplitY]
-        A22 = a[aSplitX:ar, aSplitY:ac]
-        B11 = b[0:bSplitX, 0:bSplitY]
-        B12 = b[0:bSplitX, bSplitY:bc]
-        B21 = b[bSplitX:br, 0:bSplitY]
-        B22 = b[bSplitX:br, bSplitY:bc]
+        aSplitX = aRows // 2 # what value to divide by rows for
+        aSplitY = aCols // 2 # the value to divide columns into
+        bSplitX = aSplitY    # where to divide matrix B columns
+        bSplitY = aSplitX    # where to divide matrix B rows
+        cSplitX, cSplitY = aSplitX, bSplitY # where the splits match up with the multiplied matrix
 
-        C[0:cSplitX, 0:cSplitY] = recursivematrixmultiply(A11, B11)+recursivematrixmultiply(A12, B21)
-        C[0:cSplitX, cSplitY:CC] = recursivematrixmultiply(A11, B12) + recursivematrixmultiply(A12, B22)
-        C[cSplitX:Cr, 0:cSplitY] = recursivematrixmultiply(A21, B11) + recursivematrixmultiply(A22, B21)
-        C[cSplitX:Cr, cSplitY:CC] = recursivematrixmultiply(A21, B12) + recursivematrixmultiply(A22, B22)
+        # divide input matrices into sub problems
+        A11 = a[0:aSplitX, 0:aSplitY]
+        A12 = a[0:aSplitX, aSplitY:aCols]
+        A21 = a[aSplitX:aRows, 0:aSplitY]
+        A22 = a[aSplitX:aRows, aSplitY:aCols]
+
+        B11 = b[0:bSplitX, 0:bSplitY]
+        B12 = b[0:bSplitX, bSplitY:bCols]
+        B21 = b[bSplitX:bRows, 0:bSplitY]
+        B22 = b[bSplitX:bRows, bSplitY:bCols]
+
+        # Call recursive function to solve each subsection of the matrix
+        C[0:cSplitX, 0:cSplitY] = recursivematrixmultiply(A11, B11) + recursivematrixmultiply(A12, B21)
+        C[0:cSplitX, cSplitY:cCols] = recursivematrixmultiply(A11, B12) + recursivematrixmultiply(A12, B22)
+        C[cSplitX:cRows, 0:cSplitY] = recursivematrixmultiply(A21, B11) + recursivematrixmultiply(A22, B21)
+        C[cSplitX:cRows, cSplitY:cCols] = recursivematrixmultiply(A21, B12) + recursivematrixmultiply(A22, B22)
+
+    # return solved matrix
     return C
 
 def lab1MM(A, B):
