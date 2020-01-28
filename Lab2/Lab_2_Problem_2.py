@@ -47,6 +47,62 @@ def recursivematrixmultiply(a, b):
     # return solved matrix
     return C
 
+
+def recursiveMatrixMultiply(a, b, aRowStart, aRowEnd, aColStart, aColEnd,
+                            bRowStart, bRowEnd, bColStart, bColEnd):
+
+    # Check that matrix shapes are valid for multiplication
+    if (np.shape(a)[1] != np.shape(b)[0]):
+        print("Given matrix sizes cannot be multiplied together")
+        SystemExit()
+
+    # number of rows and columns in each given matrix
+    aRows = aRowEnd-aRowStart
+    aCols = aColEnd-aColStart
+    bRows = bRowEnd-bRowStart
+    bCols = bColEnd-bColStart
+
+    #create matrix for result
+    C = np.matrix(np.zeros((aRowEnd-aRowStart, bColEnd-bColStart)))
+    cRows = aRowEnd-aRowStart
+    cCols= bColEnd-bColStart
+
+    # if one matrix is 1x1, find result (base case)
+    if(aRows == aCols == 1):
+        C = a[aRowStart, aColStart]*b[bRowStart:bRowEnd, bColStart:bColEnd]
+        return C
+
+    elif (bRows == bCols == 1):
+        C = a[aRowStart:aRowEnd, aColStart:aColEnd]*b[bRowStart, bColStart]
+        return C
+
+    # catch occurrence of 0x0 matrix multiplication
+    elif(aRows * aCols * bRows * bCols == 0):
+        return C
+
+    # Divide Step
+    else:
+        aRowSplit = (aRows // 2) + aRowStart # index to divide matrix A rows
+        aColSplit = (aCols // 2) + aColStart # index to divide matrix A columns
+        bRowSplit = (aCols // 2) + bRowStart # where to divide matrix B columns
+        bColSplit = (aRows // 2) + bColStart # where to divide matrix B rows
+        cRowSplit, cColSplit = (aRows // 2), (bCols // 2) # where the splits match up with the resultant matrix
+
+        # Call recursive function to solve each subsection of the matrix
+        C[0:cRowSplit, 0:cColSplit] = recursiveMatrixMultiply(a, b, aRowStart, aRowSplit, aColStart, aColSplit, bRowStart, bRowSplit, bColStart, bColSplit) \
+                                      + recursiveMatrixMultiply(a, b, aRowStart, aRowSplit, aColSplit, aColEnd, bRowSplit, bRowEnd, bColStart, bColSplit)
+        C[0:cRowSplit, cColSplit:cCols] = recursiveMatrixMultiply(a, b, aRowStart, aRowSplit, aColStart, aColSplit, bRowStart, bRowSplit, bColSplit, bColEnd) \
+                                          + recursiveMatrixMultiply(a, b, aRowStart, aRowSplit, aColSplit, aColEnd, bRowSplit, bRowEnd, bColSplit, bColEnd)
+        C[cRowSplit:cRows, 0:cColSplit] = recursiveMatrixMultiply(a, b, aRowSplit, aRowEnd, aColStart, aColSplit, bRowStart, bRowSplit, bColStart, bColSplit) \
+                                          + recursiveMatrixMultiply(a, b, aRowSplit, aRowEnd, aColSplit, aColEnd, bRowSplit, bRowEnd, bColStart, bColSplit)
+        C[cRowSplit:cRows, cColSplit:cCols] = recursiveMatrixMultiply(a, b, aRowSplit, aRowEnd, aColStart, aColSplit, bRowStart, bRowSplit, bColSplit, bColEnd) \
+                                              + recursiveMatrixMultiply(a, b, aRowSplit, aRowEnd, aColSplit, aColEnd, bRowSplit, bRowEnd, bColSplit, bColEnd)
+
+    # return solved matrix
+    return C
+
+
+# Brute-Force Matrix Multiplication used in Lab 1
 def lab1MM(A, B):
     if (np.shape(A)[1] != np.shape(B)[0]):
         return -1
@@ -66,18 +122,20 @@ def MM(A, B):
     if(np.shape(A)[1]!=np.shape(B)[0]):
         return -1
     C = np.zeros((np.shape(A)[0], np.shape(B)[1]))
-    return recursivematrixmultiply(A, B)
+    #return recursivematrixmultiply(A, B)
+    return recursiveMatrixMultiply(A, B, 0, np.shape(A)[0], 0, np.shape(A)[1], 0, np.shape(B)[0], 0, np.shape(B)[1])
 
+#prompt user for matrix sizes
 ar = int(input("Enter A rows value\n"))
-ac = int(input("Enter A columns value\n"))
-br = int(input("Enter B rows value\n"))
+ac = int(input("Enter A columns value (also B rows value)\n"))
+br = ar #int(input("Enter B rows value\n"))
 bc = int(input("Enter B columns value\n"))
 
-
+#generate random matrices for given matrix sizes
 a = np.matrix(np.random.rand(ar,ac))
-
 b = np.matrix(np.random.rand(br,bc))
 
+# Run each method and record the time taken
 startTime = time.time()
 myP = MM(a, b)
 myTime = time.time() -startTime
@@ -85,22 +143,26 @@ startTime = time.time()
 npP = a*b
 npTime = time.time()-startTime
 
-
-if(np.array_equal(np.round(myP*1000),np.round(npP*1000))):
-    print("Mine took: " + str(myTime)+" seconds")
+#output time taken
+if (np.array_equal(np.round(myP * 1000), np.round(npP * 1000))):
+    print("Mine took: " + str(myTime) + " seconds")
     print("Numpy took: " + str(npTime) + " seconds")
 else:
     print("Product was incorrect")
 
+
+# run problem for matrix sizes 1x1 through n^nxn^n (128x128)
 n = 1
 myTimes = []
 npTimes = []
 sizes = []
 for i in range(8):
-    a = np.matrix(np.random.rand(n, n))
 
+    # Generate new matrices
+    a = np.matrix(np.random.rand(n, n))
     b = np.matrix(np.random.rand(n, n))
 
+    # Perform multiplication and record times
     startTime = time.time()
     myP = MM(a, b)
     myTime = time.time()-startTime
@@ -115,6 +177,15 @@ for i in range(8):
     print("finished size " + str(n))
     n = n * 2
 
+    # output time taken
+    if (np.array_equal(np.round(myP * 1000), np.round(npP * 1000))):
+        print("Mine took: " + str(myTime) + " seconds")
+        print("Numpy took: " + str(npTime) + " seconds")
+    else:
+        print("Product was incorrect")
+
+
+# plot results
 plt.plot(sizes, myTimes)
 #plt.plot(sizes, npTimes)
 plt.xlabel("n")
