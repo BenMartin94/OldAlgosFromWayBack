@@ -2,15 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ad15dbb7-a9c0-494e-9857-f38b8f3b2d6a" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Lab_2_Problem_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lab_2_Problem_1.py" afterDir="false" />
+=======
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lab_2_Problem_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lab_2_Problem_2.py" afterDir="false" />
+>>>>>>> skyfixingcrap
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+<<<<<<< HEAD
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
@@ -51,6 +57,8 @@
       </file>
     </leaf>
   </component>
+=======
+>>>>>>> skyfixingcrap
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -61,6 +69,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+<<<<<<< HEAD
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -95,12 +104,26 @@
         </subPane>
       </pane>
     </panes>
+=======
+  <component name="ProjectId" id="1X2PKkGNqso4pBrLwQBhjmU0uSO" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+>>>>>>> skyfixingcrap
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\SchoolWork\EngAlgo\SkyGuysAlgoCity\Lab2" />
     </key>
   </component>
+<<<<<<< HEAD
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -114,6 +137,9 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.Lab_2_Problem_1">
+=======
+  <component name="RunManager" selected="Python.Lab_2_Problem_2">
+>>>>>>> skyfixingcrap
     <configuration name="Lab_2_Problem_1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Lab2" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -184,6 +210,7 @@
     <option name="localTasksCounter" value="2" />
     <servers />
   </component>
+<<<<<<< HEAD
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
     <editor active="true" />
@@ -207,10 +234,13 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
+=======
+>>>>>>> skyfixingcrap
   <component name="VcsManagerConfiguration">
     <MESSAGE value="not Finished q2 yet" />
     <option name="LAST_COMMIT_MESSAGE" value="not Finished q2 yet" />
   </component>
+<<<<<<< HEAD
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
       <expression>
@@ -286,5 +316,44 @@
         </state>
       </provider>
     </entry>
+=======
+  <component name="WindowStateProjectService">
+    <state width="2960" height="421" key="GridCell.Tab.0.bottom" timestamp="1580249682637">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="421" key="GridCell.Tab.0.bottom/0.0.3000.2000@0.0.3000.2000" timestamp="1580249682637" />
+    <state width="2960" height="421" key="GridCell.Tab.0.center" timestamp="1580249682636">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="421" key="GridCell.Tab.0.center/0.0.3000.2000@0.0.3000.2000" timestamp="1580249682636" />
+    <state width="2960" height="421" key="GridCell.Tab.0.left" timestamp="1580249682634">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="421" key="GridCell.Tab.0.left/0.0.3000.2000@0.0.3000.2000" timestamp="1580249682634" />
+    <state width="2960" height="421" key="GridCell.Tab.0.right" timestamp="1580249682636">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="421" key="GridCell.Tab.0.right/0.0.3000.2000@0.0.3000.2000" timestamp="1580249682636" />
+    <state width="2960" height="659" key="GridCell.Tab.1.bottom" timestamp="1580248703403">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="659" key="GridCell.Tab.1.bottom/0.0.3000.2000@0.0.3000.2000" timestamp="1580248703403" />
+    <state width="2960" height="659" key="GridCell.Tab.1.center" timestamp="1580248703400">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="659" key="GridCell.Tab.1.center/0.0.3000.2000@0.0.3000.2000" timestamp="1580248703400" />
+    <state width="2960" height="659" key="GridCell.Tab.1.left" timestamp="1580248703398">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="659" key="GridCell.Tab.1.left/0.0.3000.2000@0.0.3000.2000" timestamp="1580248703398" />
+    <state width="2960" height="659" key="GridCell.Tab.1.right" timestamp="1580248703402">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state width="2960" height="659" key="GridCell.Tab.1.right/0.0.3000.2000@0.0.3000.2000" timestamp="1580248703402" />
+    <state x="627" y="372" key="SettingsEditor" timestamp="1580241284288">
+      <screen x="0" y="0" width="3000" height="2000" />
+    </state>
+    <state x="627" y="372" key="SettingsEditor/0.0.3000.2000@0.0.3000.2000" timestamp="1580241284288" />
+>>>>>>> skyfixingcrap
   </component>
 </project>
