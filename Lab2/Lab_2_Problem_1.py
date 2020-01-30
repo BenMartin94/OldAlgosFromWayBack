@@ -36,7 +36,7 @@ funcDict = {
 
 nvec1 = genNvecPowersOf2(200, 100)
 nvec2 = genNvec(350, 20, 1)
-nvec3 = genNvec(350, 100, 1)
+nvec3 = genNvecPowersOf2(35, 50)
 nvec4 = genNvec(350, 100, 1)
 
 
