@@ -96,8 +96,8 @@ def main():
 
     # make n vectors
     nVecA = genNvec(1, 25, 1)
-    nVecB = genNvec(1, 300, 2)
-    nVecC = genNvec(1, 300, 2)
+    nVecB = genNvec(1, 100, 10)
+    nVecC = genNvec(1, 100, 10)
 
     # arrays to hold times for algorithms
     aTimes = []
@@ -135,7 +135,7 @@ def main():
     plt.title("Recursive Fibonacci Method Calculation Times")
     plt.show()
 
-    # plot results of memoized and bottom up methods
+    # plot results of memoized method
     plt.figure()
     plt.plot(nVecB, bTimes)
     plt.xlabel("n")
@@ -143,6 +143,7 @@ def main():
     plt.title("Memoized Fibonacci Method Calculation Times")
     plt.show()
 
+    # plot results of bottom up method
     plt.figure()
     plt.plot(nVecC, cTimes)
     plt.xlabel("n")
