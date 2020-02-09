@@ -130,20 +130,24 @@ def main():
     # plot results of recursive Fibonacci method
     plt.figure()
     plt.plot(nVecA, aTimes)
-    plt.legend(['A'])
     plt.xlabel("n")
-    plt.ylabel("time")
-    plt.title("Fibonacci method costs")
+    plt.ylabel("time (s)")
+    plt.title("Recursive Fibonacci Method Calculation Times")
     plt.show()
 
     # plot results of memoized and bottom up methods
     plt.figure()
     plt.plot(nVecB, bTimes)
-    plt.plot(nVecC, cTimes)
-    plt.legend(['B', 'C'])
     plt.xlabel("n")
-    plt.ylabel("time")
-    plt.title("Fibonacci method costs")
+    plt.ylabel("time (s)")
+    plt.title("Memoized Fibonacci Method Calculation Times")
+    plt.show()
+
+    plt.figure()
+    plt.plot(nVecC, cTimes)
+    plt.xlabel("n")
+    plt.ylabel("time (s)")
+    plt.title("Bottom-Up Fibonacci Method Calculation Times")
     plt.show()
     
     return "\n Program ended sucessfully"
