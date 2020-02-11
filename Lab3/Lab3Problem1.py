@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # bad top down recursion to find and return given nth fibonacci number.
 def recursiveFibonacci(nth):
 
-    if (nth <=2):
+    if (nth <= 2):
         return 1
     else:
         return (recursiveFibonacci(nth-1) + recursiveFibonacci(nth-2))
@@ -18,7 +18,7 @@ def recursiveFibonacci(nth):
 # memoized recursive Fibonacci method wrapper method
 def memoizedFibonacci(nth):
     # catch fringe/base cases
-    if (nth <=2):
+    if (nth <= 2):
         return 1
 
     #call memoized method to do the work
@@ -96,8 +96,8 @@ def main():
 
     # make n vectors
     nVecA = genNvec(1, 25, 1)
-    nVecB = genNvec(1, 100, 10)
-    nVecC = genNvec(1, 100, 10)
+    nVecB = genNvec(1, 200, 5)
+    nVecC = genNvec(1, 200, 5)
 
     # arrays to hold times for algorithms
     aTimes = []
@@ -126,29 +126,50 @@ def main():
         cTimes.append(time.time() - startTime)
 
 
+    # two to the n plot for comparison
+    toTheN = []
+    for n in nVecA:
+        toTheN.append((2**n)/2000000000)
+
+    # a linear plot to compare to memoized plot
+    linear1 = []
+    for n in nVecB:
+        linear1.append(n/4000000)
+
+    # a linear plot to compare to bottom up plot
+    linear2 = []
+    for n in nVecC:
+        linear2.append(n/10000000)
+
 
     # plot results of recursive Fibonacci method
     plt.figure()
     plt.plot(nVecA, aTimes)
+    plt.plot(nVecA, toTheN)
     plt.xlabel("n")
     plt.ylabel("time (s)")
     plt.title("Recursive Fibonacci Method Calculation Times")
+    plt.legend(['Recursive Method Times', '(2^n)/(2x10^9)'])
     plt.show()
 
     # plot results of memoized method
     plt.figure()
     plt.plot(nVecB, bTimes)
+    plt.plot(nVecB, linear1)
     plt.xlabel("n")
     plt.ylabel("time (s)")
     plt.title("Memoized Fibonacci Method Calculation Times")
+    plt.legend(['Memoized Method Times', 'n/(4x10^6)'])
     plt.show()
 
     # plot results of bottom up method
     plt.figure()
     plt.plot(nVecC, cTimes)
+    plt.plot(nVecC, linear2)
     plt.xlabel("n")
     plt.ylabel("time (s)")
     plt.title("Bottom-Up Fibonacci Method Calculation Times")
+    plt.legend(['Bottom-Up Method Times', 'nx10^-6'])
     plt.show()
     
     return "\n Program ended sucessfully"
