@@ -33,7 +33,7 @@ def recursiveMemoLCS(x,y, memo):
     xF = x[len(x) - 1]
     yF = y[len(y) - 1]
     if (memo[len(x)-1, len(y)-1] > 0):
-        return memo[len(x), len(y)]
+        return memo[len(x)-1, len(y)-1]
     elif(xF == yF):
         memo[len(x)-1, len(y)-1] = (recursiveLCS(x[0:len(x)-1], y[0:len(y)-1]))+1
         return(memo[len(x)-1, len(y)-1])
@@ -63,10 +63,8 @@ def bruteForceLCS(x, y):
         yBin2 = yBin
         # check all subarrays of y
         while yBin2 > 0:
-        
             # if y sub array is the same length as x sub array, check it
             if (binaryOnes(yBin2) == xOnes):
-
                 equal = compareSubarrays(x, y, xBin, yBin2)
 
                 if equal:
@@ -127,14 +125,31 @@ def getSubArray(arrayx, xBin):
 #getSubArray
 
 
-x = np.random.randint(0, 5, 7) #[3,6,4, 2, 1, 5, 6, 8]
-y = np.random.randint(0, 5, 7) #[1,3,5,4]
-print(x)
-print(y)
+x = np.random.randint(0, 5, 9) #[3,6,4, 2, 1, 5, 6, 8]
+y = np.random.randint(0, 5, 9) #[1,3,5,4]
+print("array x: ", x)
+print("array y: ", y, "\n")
 
 
-print(recursiveLCS(x, y))
+startTime = time.time()
+recuresiveVal = (recursiveLCS(x, y))
+recursiveTime = time.time() - startTime
+
 #print(bottomUp(x, y)) doesn't work
-print(bruteForceLCS(x, y))
+
+startTime = time.time()
+bruteVal = (bruteForceLCS(x, y))
+bruteTime = time.time() - startTime
+
+
 memoy = np.zeros((len(x), len(y)))
-print(recursiveMemoLCS(x, y, memoy))
+
+startTime = time.time()
+memoVal = (recursiveMemoLCS(x, y, memoy))
+memoTime = time.time() - startTime
+
+print("Recursive:\t", recuresiveVal, "\t", recursiveTime)
+print("Brute Force:\t", bruteVal[0], "\t", bruteTime)
+print("Memoized: \t", memoVal, "\t", memoTime)
+
+print("\nLCS:\t", bruteVal[1])
