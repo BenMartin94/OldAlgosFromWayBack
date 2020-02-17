@@ -44,13 +44,14 @@ def recursiveMemoLCS(x,y, memo):
 
 
 # finds the LCS by checking evey possible sub array of x, against every possible subarray of y
+# returns both the length of the LCS, and the LCS itself
 def bruteForceLCS(x, y):
 
-    # binary values length of arrays, 1 represents string to compare
+    # binary values of each item in arrays, 1 represents an item to compare
     xBin = BinaryEncodedVal(x)
     yBin = BinaryEncodedVal(y)
     
-    # holds binary value to represent array
+    # holds binary value to represent array of LCS
     xMax = 0b0
     yMax = 0b0
 
@@ -75,8 +76,7 @@ def bruteForceLCS(x, y):
                     # else, we dont care
             # try next sub array of y
             yBin2 = yBin2 -1
-        xBin = xBin - 1      #move to next x subarray
-
+        xBin = xBin - 1      #move to next subarray of x
 
     return maxLCS , getSubArray(x, xMax) #return longest LCS
 #bruteForceLCS
@@ -97,6 +97,7 @@ def BinaryEncodedVal(givenArray):
 def binaryOnes(BinaryNum):
     check = BinaryNum
     onesSum = 0 # counter for each 1 found in the binary number
+    
     while check > 0:
         if (check & 1): #if it a 1, add it to the sum
             onesSum = onesSum + 1
@@ -105,7 +106,7 @@ def binaryOnes(BinaryNum):
     return onesSum
 #binaryOnes
 
-# returns boolean of if arrays are equal
+# returns boolean of whether given subarrays are equal
 def compareSubarrays(arrayx, arrayy, xBin, yBin):
 
     xSub = getSubArray(arrayx, xBin)
@@ -125,8 +126,10 @@ def getSubArray(arrayx, xBin):
 #getSubArray
 
 
-x = np.random.randint(0, 5, 9) #[3,6,4, 2, 1, 5, 6, 8]
-y = np.random.randint(0, 5, 9) #[1,3,5,4]
+
+#generate random integer arrays (Min_Val, Max_Val, Length)
+x = np.random.randint(0, 5, 10) 
+y = np.random.randint(0, 5, 10) 
 print("array x: ", x)
 print("array y: ", y, "\n")
 
@@ -135,7 +138,10 @@ startTime = time.time()
 recuresiveVal = (recursiveLCS(x, y))
 recursiveTime = time.time() - startTime
 
-#print(bottomUp(x, y)) doesn't work
+startTime = time.time()
+bottomUpVal = bottomUp(x, y)
+bottomUpTime = time.time()-startTime
+
 
 startTime = time.time()
 bruteVal = (bruteForceLCS(x, y))
@@ -148,8 +154,13 @@ startTime = time.time()
 memoVal = (recursiveMemoLCS(x, y, memoy))
 memoTime = time.time() - startTime
 
+# output results
+print("Method\t\t LCS\t time (s)")
+print("-----------------------------------------")
 print("Recursive:\t", recuresiveVal, "\t", recursiveTime)
-print("Brute Force:\t", bruteVal[0], "\t", bruteTime)
 print("Memoized: \t", memoVal, "\t", memoTime)
+print("Brute Force:\t", bruteVal[0], "\t", bruteTime)
+#print("Bottom Up: \t", bottomUpVal, "\t", bottomUpTime) # DOESN'T WORK
+
 
 print("\nLCS:\t", bruteVal[1])

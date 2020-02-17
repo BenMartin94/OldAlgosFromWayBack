@@ -2,6 +2,11 @@
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+import timeit
+
+import sys
+
+sys.setrecursionlimit(10000)
 
 
 # bad top down recursion to find and return given nth fibonacci number.
@@ -109,6 +114,8 @@ def main():
     bresults = []
     cresults = []
 
+
+
     # dooda kaka layyyshuns
     for n in nVecA:
         startTime = time.time()
@@ -172,7 +179,7 @@ def main():
     plt.legend(['Bottom-Up Method Times', 'nx10^-6'])
     plt.show()
     
-    return "\n Program ended sucessfully"
+    return "\n Program ended successfully"
 #main
 
 
@@ -181,8 +188,5 @@ def main():
 
 # just DO it
 print(main())
- 
-
-
 
 
