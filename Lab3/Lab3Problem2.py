@@ -148,39 +148,51 @@ def getSubArray(arrayx, xBin):
 #getSubArray
 
 
-
-#generate random integer arrays (Min_Val, Max_Val, Length)
-x = np.random.randint(0, 5, 10) 
-y = np.random.randint(0, 5, 10) 
-print("array x: ", x)
-print("array y: ", y, "\n")
-
-
-startTime = time.time()
-recuresiveVal = (recursiveLCS(x, y))
-recursiveTime = time.time() - startTime
-
-startTime = time.time()
-bottomUpVal = bottomUp(x, y)
-bottomUpTime = time.time()-startTime
+def main():
+    #generate random integer arrays (Min_Val, Max_Val, Length)
+    x = np.random.randint(0, 5, 10) 
+    y = np.random.randint(0, 5, 9) 
+    print("array x: ", x)
+    print("array y: ", y, "\n")
 
 
-startTime = time.time()
-bruteVal = (bruteForceLCS(x, y))
-bruteTime = time.time() - startTime
+    startTime = time.time()
+    recuresiveVal = recursiveLCS(x, y)
+    recursiveTime = time.time() - startTime
 
 
-startTime = time.time()
-memoVal = memoizedLCS(x, y)
-memoTime = time.time() - startTime
-
-# output results
-print("Method\t\t LCS\t time (s)")
-print("-----------------------------------------")
-print("Recursive:\t", recuresiveVal, "\t", recursiveTime)
-print("Memoized: \t", memoVal, "\t", memoTime)
-print("Brute Force:\t", bruteVal[0], "\t", bruteTime)
-#print("Bottom Up: \t", bottomUpVal, "\t", bottomUpTime) # DOESN'T WORK
+    startTime = time.time()
+    memoVal = memoizedLCS(x, y)
+    memoTime = time.time() - startTime
 
 
-print("\nLCS:\t", bruteVal[1])
+    startTime = time.time()
+    bruteVal = bruteForceLCS(x, y)
+    bruteTime = time.time() - startTime
+
+
+
+    startTime = time.time()
+    bottomUpVal = bottomUp(x, y)
+    bottomUpTime = time.time()-startTime
+
+
+    # output results
+    print("Method\t\t LCS\t time (s)")
+    print("-----------------------------------------")
+    print("Recursive:\t", recuresiveVal, "\t", recursiveTime)
+    print("Memoized: \t", memoVal, "\t", memoTime)
+    print("Brute Force:\t", bruteVal[0], "\t", bruteTime)
+    #print("Bottom Up: \t", bottomUpVal, "\t", bottomUpTime) # DOESN'T WORK
+
+
+    print("\nLCS:\t", bruteVal[1])
+
+    return("Program Ended Successfully")
+#main
+
+
+
+
+print(main())
+
