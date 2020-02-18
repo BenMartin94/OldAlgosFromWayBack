@@ -168,15 +168,20 @@ def genNvec(startingN, samples, rateOfChange):
 
 def main():
 
+    # value to determine lengths n and m of arrays x and y
     n = 12
 
-    #generate vectors on n values (starting n, how many n, step)
+    # generate vectors on n values (starting n, how many n, step)
     nVec1 = genNvec(1, n, 1)
     nVec2 = genNvec(1, n, 1)
     nVec3 = genNvec(1, n, 1)
 
-
+    # arrays to hold times for calculations
     recursiveTimes = []
+    memoizedTimes = []
+    bruteForceTimes = []
+
+    # run calculations
     for length in nVec1:
         x = np.random.randint(0, 9, length) 
         y = np.random.randint(0, 9, length) 
@@ -185,30 +190,18 @@ def main():
         recuresiveVal = recursiveLCS(x, y)
         recursiveTimes.append(time.time() - startTime)
 
-
-    memoizedTimes = []
-    for length in nVec2:
-        x = np.random.randint(0, 9, length) 
-        y = np.random.randint(0, 9, length) 
-
         startTime = time.time()
         memoizedVal = memoizedLCS(x, y)
         memoizedTimes.append(time.time() - startTime)
 
-
-    bruteForceTimes = []
-    for length in nVec3:
-        x = np.random.randint(0, 9, length) 
-        y = np.random.randint(0, 9, length)
-
         startTime = time.time()
-        bruteForceVal = memoizedLCS(x, y)
+        bruteForceVal = bruteForceLCS(x, y)
         bruteForceTimes.append(time.time() - startTime)
 
 
 
 
-
+    # exponential plots for comparison
     exp = []
     for val in nVec1:
         exp.append((val**(val/3))/(100000))
@@ -217,7 +210,7 @@ def main():
 
     exp3 = []
     for val in nVec3:
-        exp3.append((val**(val/3))/(100000))
+        exp3.append((val**(val/2))/(100000))
 
 
 
@@ -238,7 +231,7 @@ def main():
     ax = fig.add_subplot(1, 1, 1)
     plt.plot(nVec2, memoizedTimes)
     ax.set_yscale('log')
-    plt.plot(nVec1, exp2)
+    plt.plot(nVec2, exp2)
     plt.xlabel("x, y array length")
     plt.ylabel("time (s)")
     plt.title("Memoized LCS Method Calculation Times")
@@ -254,27 +247,10 @@ def main():
     plt.xlabel("x, y array length")
     plt.ylabel("time (s)")
     plt.title("Brute Force LCS Method Calculation Times")
-    plt.legend(['Brute Force Method Times', '(n^n/3)x10^-6'])
+    plt.legend(['Brute Force Method Times', '(n^n/2)x10^-6'])
     plt.show()
 
 
-
-
-
-
-
-    x = np.random.randint(0, 9, 5)
-    y = np.random.randint(0, 9, 5)
-    startTime = time.time()
-    bruteVal = bruteForceLCS(x, y)
-    bruteTime = time.time() - startTime
-
-
-
-
-    # output results
-    print("Brute Force:\t", bruteVal[0], "\t", bruteTime)
-    print("\nLCS:\t", bruteVal[1])
 
 
     # # 3d plot 
