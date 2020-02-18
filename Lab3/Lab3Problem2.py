@@ -173,6 +173,7 @@ def main():
     #generate vectors on n values (starting n, how many n, step)
     nVec1 = genNvec(1, n, 1)
     nVec2 = genNvec(1, n, 1)
+    nVec3 = genNvec(1, n, 1)
 
 
     recursiveTimes = []
@@ -194,9 +195,29 @@ def main():
         memoizedVal = memoizedLCS(x, y)
         memoizedTimes.append(time.time() - startTime)
 
+
+    bruteForceTimes = []
+    for length in nVec3:
+        x = np.random.randint(0, 9, length) 
+        y = np.random.randint(0, 9, length)
+
+        startTime = time.time()
+        bruteForceVal = memoizedLCS(x, y)
+        bruteForceTimes.append(time.time() - startTime)
+
+
+
+
+
     exp = []
     for val in nVec1:
         exp.append((val**(val/3))/(100000))
+
+    exp2 = exp
+
+    exp3 = []
+    for val in nVec3:
+        exp3.append((val**(val/3))/(100000))
 
 
 
@@ -212,17 +233,35 @@ def main():
     plt.legend(['Recursive Method Times', '(n^n/3)x10^-6'])
     plt.show()
     
-    # plot results of rmemoized method
+    # plot results of memoized method
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    plt.plot(nVec1, memoizedTimes)
+    plt.plot(nVec2, memoizedTimes)
     ax.set_yscale('log')
-    plt.plot(nVec1, exp)
+    plt.plot(nVec1, exp2)
     plt.xlabel("x, y array length")
     plt.ylabel("time (s)")
     plt.title("Memoized LCS Method Calculation Times")
     plt.legend(['Memoized Method Times', '(n^n/3)x10^-6'])
     plt.show()
+
+    # plot results of brute force method
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    plt.plot(nVec3, bruteForceTimes)
+    ax.set_yscale('log')
+    plt.plot(nVec3, exp3)
+    plt.xlabel("x, y array length")
+    plt.ylabel("time (s)")
+    plt.title("Brute Force LCS Method Calculation Times")
+    plt.legend(['Brute Force Method Times', '(n^n/3)x10^-6'])
+    plt.show()
+
+
+
+
+
+
 
     x = np.random.randint(0, 9, 5)
     y = np.random.randint(0, 9, 5)
