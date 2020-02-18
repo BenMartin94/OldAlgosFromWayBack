@@ -5,6 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 
+# Recursive method to find LCS
 def recursiveLCS(x, y):
     if(len(x)==0 or len(y)==0):
         return 0
@@ -14,11 +15,12 @@ def recursiveLCS(x, y):
         return (recursiveLCS(x[0:len(x)-1], y[0:len(y)-1]))+1
     elif(xF != yF):
         return max(recursiveLCS(x[0:len(x)-1], y), recursiveLCS(x, y[0:len(y)-1]))
+#recursiveLCS
 
 
 
 
-
+# Bottom-up method to find LCS ***DOES NOT WORK***
 def bottomUp(x, y):
 
     maxSoFar = np.zeros((len(x), len(y)))
@@ -31,20 +33,21 @@ def bottomUp(x, y):
             else:
                 maxSoFar[i,j] = max(maxSoFar[i, j-1], maxSoFar[i-1, j])
     return np.max(maxSoFar)
+#bottomUp
+
 
 
 
 #helper method for recursiveMemoLCS
 def memoizedLCS(x, y):
-    memoy = np.zeros((len(x), len(y))) #build memo
+    memoy = np.zeros((len(x), len(y)), int) #build memo
     return recursiveMemoLCS(x, y, memoy)
-    
 #memoizedLCS
 
 
 
 
-
+# The main recursive method. uses memo to prevent recalculating values
 def recursiveMemoLCS(x,y, memo):
     if(len(x) == 0 or len(y) == 0):
         memo[len(x)-1, len(y)-1] = 0
@@ -59,7 +62,7 @@ def recursiveMemoLCS(x,y, memo):
         memo[len(x)-2, len(y)-1] = recursiveLCS(x[0:len(x)-1], y)
         memo[len(x)-1, len(y)-2] = recursiveLCS(x, y[0:len(y)-1])
         return max(memo[len(x)-1, len(y)-2], memo[len(x)-2, len(y)-1])
-
+#recursiveMemoLcs
 
 
 
@@ -104,6 +107,7 @@ def bruteForceLCS(x, y):
 #bruteForceLCS
     
 
+
 # returns an binary encoded value to represent each slot in an array
 # starts wih a 1 for each position
 def BinaryEncodedVal(givenArray):
@@ -114,6 +118,8 @@ def BinaryEncodedVal(givenArray):
 
     return binaryVal
 #BinaryEncodedVal
+
+
 
 #returns a count of all ones in given binary number
 def binaryOnes(BinaryNum):
@@ -128,6 +134,8 @@ def binaryOnes(BinaryNum):
     return onesSum
 #binaryOnes
 
+
+
 # returns boolean of whether given subarrays are equal
 def compareSubarrays(arrayx, arrayy, xBin, yBin):
 
@@ -135,6 +143,7 @@ def compareSubarrays(arrayx, arrayy, xBin, yBin):
     ySub = getSubArray(arrayy, yBin)
 
     return (xSub == ySub)
+
 
 
 # returns the sub array defined by xBin
@@ -165,16 +174,14 @@ def genNvec(startingN, samples, rateOfChange):
 
 
 
+###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 def main():
 
-    n = 12          # value to determine lengths n and m of arrays x and y
-    allMatch = True # boolean to keep track of if all results agree
-
-    # generate vectors on n values (starting n, how many n, step)
-    nVec1 = genNvec(1, n, 1)
-    nVec2 = genNvec(1, n, 1)
-    nVec3 = genNvec(1, n, 1)
+    n = 12                      # value to determine lengths n and m of arrays x and y
+    allMatch = True             # boolean to keep track of if all results agree
+    nVec = genNvec(1, n, 1)     # generate vector of n values
 
     # arrays to hold times for calculations
     recursiveTimes = []
@@ -182,10 +189,11 @@ def main():
     bruteForceTimes = []
 
     # Title for output
-    print("Recursive\tMemoized\tBrute Force\tLCS")
+    print("\nRecursive\tMemoized\tBrute Force\t LCS")
+    print("------------------------------------------------------")
 
     # run calculations
-    for length in nVec1:
+    for length in nVec:
         x = np.random.randint(0, 9, length) 
         y = np.random.randint(0, 9, length) 
 
@@ -201,28 +209,27 @@ def main():
         bruteForceVal = bruteForceLCS(x, y)
         bruteForceTimes.append(time.time() - startTime)
 
-        # output results and check if all results match
+        # output results, and check if all results match
         print(recursiveVal, "\t\t", memoizedVal, "\t\t", bruteForceVal[0], "\t\t", bruteForceVal[1])
         allMatch = allMatch and (recursiveVal == memoizedVal == bruteForceVal[0])
 
     # output summary
     if allMatch:
-        print("All results are correct")
+        print("\nAll results are correct")
     else:
-        print("ERROR: Not all results are equal")
-
+        print("\nERROR: Not all results are equal")
 
 
 
     # exponential plots for comparison
     exp = []
-    for val in nVec1:
+    for val in nVec:
         exp.append((val**(val/3))/(100000))
 
     exp2 = exp
 
     exp3 = []
-    for val in nVec3:
+    for val in nVec:
         exp3.append((val**(val/2))/(100000))
 
 
@@ -231,8 +238,8 @@ def main():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.set_yscale('log')
-    plt.plot(nVec1, recursiveTimes)
-    plt.plot(nVec1, exp)
+    plt.plot(nVec, recursiveTimes)
+    plt.plot(nVec, exp)
     plt.xlabel("x, y array length")
     plt.ylabel("time (s)")
     plt.title("Recursive LCS Method Calculation Times")
@@ -242,9 +249,9 @@ def main():
     # plot results of memoized method
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    plt.plot(nVec2, memoizedTimes)
+    plt.plot(nVec, memoizedTimes)
     ax.set_yscale('log')
-    plt.plot(nVec2, exp2)
+    plt.plot(nVec, exp2)
     plt.xlabel("x, y array length")
     plt.ylabel("time (s)")
     plt.title("Memoized LCS Method Calculation Times")
@@ -254,57 +261,14 @@ def main():
     # plot results of brute force method
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    plt.plot(nVec3, bruteForceTimes)
+    plt.plot(nVec, bruteForceTimes)
     ax.set_yscale('log')
-    plt.plot(nVec3, exp3)
+    plt.plot(nVec, exp3)
     plt.xlabel("x, y array length")
     plt.ylabel("time (s)")
     plt.title("Brute Force LCS Method Calculation Times")
     plt.legend(['Brute Force Method Times', '(n^n/2)x10^-6'])
     plt.show()
-
-
-
-
-
-    # # 3d plot 
-
-    # nVec1 = genNvec(0, 10, 1)
-
-    # mVec1 = genNvec(0, 20, 1)
-
-    # times = np.zeros((len(nVec1), len(mVec1)))
-    # nVec = []
-    # mVec = []
-
-    # for n in nVec1:
-    #     nVec.append([])
-    #     mVec.append([])
-    #     for m in mVec1:
-    #             x = np.random.randint(0, 5, m) 
-    #             y = np.random.randint(0, 5, n) 
-    #             startTime = time.time()
-    #             recuresiveVal = recursiveLCS(x, y)
-    #             recursiveTime = time.time() - startTime
-    #             times[n][m] = recursiveTime
-    #             nVec[n].append(n)
-    #             mVec[n].append(m)
-
-
-    # # plot results of bottom up method
-
-
-    # fig = plt.figure()
-    # fig.patch.set_facecolor('white')
-    # recursivePlot = fig.add_subplot(111, projection='3d')
-    # recursivePlot.plot_surface(nVec, mVec, times, cmap='viridis', edgecolor='none')
-    # recursivePlot.set_xlabel("n")
-    # recursivePlot.set_ylabel("m")
-    # recursivePlot.set_zlabel("time (s)")
-    # recursivePlot.set_title("Recursive LCS Method Calculation Times")
-    # #recursivePlot.legend(['Recursive Method Times'])
-    # plt.show()
-    
 
 
     return("Program Ended Successfully")
