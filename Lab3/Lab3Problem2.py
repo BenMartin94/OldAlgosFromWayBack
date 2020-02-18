@@ -168,8 +168,8 @@ def genNvec(startingN, samples, rateOfChange):
 
 def main():
 
-    # value to determine lengths n and m of arrays x and y
-    n = 12
+    n = 12          # value to determine lengths n and m of arrays x and y
+    allMatch = True # boolean to keep track of if all results agree
 
     # generate vectors on n values (starting n, how many n, step)
     nVec1 = genNvec(1, n, 1)
@@ -181,13 +181,16 @@ def main():
     memoizedTimes = []
     bruteForceTimes = []
 
+    # Title for output
+    print("Recursive\tMemoized\tBrute Force\tLCS")
+
     # run calculations
     for length in nVec1:
         x = np.random.randint(0, 9, length) 
         y = np.random.randint(0, 9, length) 
 
         startTime = time.time()
-        recuresiveVal = recursiveLCS(x, y)
+        recursiveVal = recursiveLCS(x, y)
         recursiveTimes.append(time.time() - startTime)
 
         startTime = time.time()
@@ -197,6 +200,16 @@ def main():
         startTime = time.time()
         bruteForceVal = bruteForceLCS(x, y)
         bruteForceTimes.append(time.time() - startTime)
+
+        # output results and check if all results match
+        print(recursiveVal, "\t\t", memoizedVal, "\t\t", bruteForceVal[0], "\t\t", bruteForceVal[1])
+        allMatch = allMatch and (recursiveVal == memoizedVal == bruteForceVal[0])
+
+    # output summary
+    if allMatch:
+        print("All results are correct")
+    else:
+        print("ERROR: Not all results are equal")
 
 
 
@@ -249,6 +262,7 @@ def main():
     plt.title("Brute Force LCS Method Calculation Times")
     plt.legend(['Brute Force Method Times', '(n^n/2)x10^-6'])
     plt.show()
+
 
 
 
