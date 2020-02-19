@@ -52,7 +52,6 @@ def recursiveMemoLCS(x,y, memo):
 
 
     if(len(x) == 0 or len(y) == 0):
-        memo[len(x)-1, len(y)-1] = 0
         return 0
     if (memo[len(x)-1, len(y)-1] >= 0):
         return memo[len(x)-1, len(y)-1]
@@ -62,9 +61,8 @@ def recursiveMemoLCS(x,y, memo):
         memo[len(x)-1, len(y)-1] = (recursiveMemoLCS(x[0:len(x)-1], y[0:len(y)-1],memo))+1
         return(memo[len(x)-1, len(y)-1])
     else:
-        memo[len(x)-2, len(y)-1] = recursiveMemoLCS(x[0:len(x)-1], y,memo)
-        memo[len(x)-1, len(y)-2] = recursiveMemoLCS(x, y[0:len(y)-1],memo)
-        return max(memo[len(x)-1, len(y)-2], memo[len(x)-2, len(y)-1])
+        memo[len(x)-1, len(y)-1] = max(recursiveMemoLCS(x[0:len(x)-1], y,memo),recursiveMemoLCS(x, y[0:len(y)-1],memo))
+        return memo[len(x)-1, len(y)-1]
 #recursiveMemoLcs
 
 
