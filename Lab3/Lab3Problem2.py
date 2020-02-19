@@ -20,7 +20,7 @@ def recursiveLCS(x, y):
 
 
 
-# Bottom-up method to find LCS ***DOES NOT WORK***
+# Bottom-up method to find LCS ***DOES NOT WORK but we tried... we did however complete the brute force***
 def bottomUp(x, y):
 
     maxSoFar = np.zeros((len(x), len(y)))
@@ -40,7 +40,7 @@ def bottomUp(x, y):
 
 #helper method for recursiveMemoLCS
 def memoizedLCS(x, y):
-    memoy = np.zeros((len(x), len(y)), int) #build memo
+    memoy = np.zeros((len(x), len(y)), int)-1 #build memo
     return recursiveMemoLCS(x, y, memoy)
 #memoizedLCS
 
@@ -49,18 +49,21 @@ def memoizedLCS(x, y):
 
 # The main recursive method. uses memo to prevent recalculating values
 def recursiveMemoLCS(x,y, memo):
+
+
     if(len(x) == 0 or len(y) == 0):
         memo[len(x)-1, len(y)-1] = 0
+        return 0
+    if (memo[len(x)-1, len(y)-1] >= 0):
+        return memo[len(x)-1, len(y)-1]
     xF = x[len(x) - 1]
     yF = y[len(y) - 1]
-    if (memo[len(x)-1, len(y)-1] > 0):
-        return memo[len(x)-1, len(y)-1]
-    elif(xF == yF):
-        memo[len(x)-1, len(y)-1] = (recursiveLCS(x[0:len(x)-1], y[0:len(y)-1]))+1
+    if(xF == yF):
+        memo[len(x)-1, len(y)-1] = (recursiveMemoLCS(x[0:len(x)-1], y[0:len(y)-1],memo))+1
         return(memo[len(x)-1, len(y)-1])
     else:
-        memo[len(x)-2, len(y)-1] = recursiveLCS(x[0:len(x)-1], y)
-        memo[len(x)-1, len(y)-2] = recursiveLCS(x, y[0:len(y)-1])
+        memo[len(x)-2, len(y)-1] = recursiveMemoLCS(x[0:len(x)-1], y,memo)
+        memo[len(x)-1, len(y)-2] = recursiveMemoLCS(x, y[0:len(y)-1],memo)
         return max(memo[len(x)-1, len(y)-2], memo[len(x)-2, len(y)-1])
 #recursiveMemoLcs
 
@@ -273,8 +276,6 @@ def main():
 
     return("Program Ended Successfully")
 #main
-
-
 
 
 print(main())
