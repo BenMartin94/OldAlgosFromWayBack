@@ -203,12 +203,24 @@ def main():
         recursiveTimes.append(time.time() - startTime)
 
         startTime = time.time()
-        memoizedVal = memoizedLCS(x, y)
-        memoizedTimes.append(time.time() - startTime)
-
-        startTime = time.time()
         bruteForceVal = bruteForceLCS(x, y)
         bruteForceTimes.append(time.time() - startTime)
+
+        startTime = time.time()
+        memoizedVal = memoizedLCS(x, y)
+        avgTime = time.time() - startTime
+
+        # memoized method is very fast - average a few runs for time
+        samples = 1000
+        for i in range(samples):
+            x = np.random.randint(0, 9, length) 
+            y = np.random.randint(0, 9, length) 
+            startTime = time.time()
+            memoizedLCS(x, y)
+            avgTime = avgTime + time.time() - startTime
+        memoizedTimes.append(avgTime/(samples+1))
+
+
 
         # output results, and check if all results match
         print(recursiveVal, "\t\t", memoizedVal, "\t\t", bruteForceVal[0], "\t\t", bruteForceVal[1])
@@ -222,12 +234,14 @@ def main():
 
 
 
-    # exponential plots for comparison
+    # plots for comparison
     exp = []
     for val in nVec:
         exp.append((val**(val/3))/(100000))
 
-    exp2 = exp
+    poly = []
+    for val in nVec:
+        poly.append((val**2)/300000)
 
     exp3 = []
     for val in nVec:
@@ -251,12 +265,12 @@ def main():
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     plt.plot(nVec, memoizedTimes)
-    ax.set_yscale('log')
-    plt.plot(nVec, exp2)
+    #ax.set_yscale('log')
+    plt.plot(nVec, poly)
     plt.xlabel("x, y array length")
     plt.ylabel("time (s)")
     plt.title("Memoized LCS Method Calculation Times")
-    plt.legend(['Memoized Method Times', '(n^n/3)x10^-6'])
+    plt.legend(['Memoized Method Times', '(n^2)/(3x10^6)'])
     plt.show()
 
     # plot results of brute force method
