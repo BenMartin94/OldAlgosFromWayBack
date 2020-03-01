@@ -37,7 +37,7 @@ class HuffmanNode:
         return self.count < other.count
 
     #print function (non-recursive)
-    def print(self):
+    def myPrint(self):
         print("Huffman Node: ")
         print("\tCharacter = ", self.character)
         print("\tIndex = ", self.index)
@@ -75,8 +75,13 @@ def getfilecharactercounts(filename):
     #Code Missing: mark and delete any characters that don't occur in the file
     #i.e., nodes should be as long as the number of unique characters in the file (not 256 things long)
     #Hint: Eliminate zero counts, sorting may help.
-
-
+    nodes.sort(key=lambda x:x.count)
+    cutat = 0
+    for i in range(len(nodes)):
+        if(nodes[i].count!=0):
+            cutat = i
+            break
+    nodes = nodes[cutat:len(nodes)]
     return nodes
 
 
@@ -148,6 +153,7 @@ def huffmanencodefile(filename):
     #write the file
     with open(filename + ".huf", 'wb') as coded_file:
         #Code Missing: Write the bitstring (and any additional information necessary) to file
+        j=-1
 
 
 def huffmandecodefile(filename):
