@@ -93,7 +93,14 @@ def createhuffmantree(huffmannodes):
     heapq.heapify(node_heap)                 #create heap
 
     #Code Missing: Create the Huffman Node Tree using the Min Priority Queue (heap)
-
+    while(len(node_heap)>1):
+        dummy = HuffmanNode(bytes(2))
+        left = heapq.heappop(node_heap)
+        right = heapq.heappop(node_heap)
+        dummy.left = left
+        dummy.right = right
+        dummy.count = left.count+right.count
+        heapq.heappush(node_heap, dummy)
     return heapq.heappop(node_heap) #final node is the tree we want
 
 
@@ -153,18 +160,44 @@ def huffmanencodefile(filename):
     #write the file
     with open(filename + ".huf", 'wb') as coded_file:
         #Code Missing: Write the bitstring (and any additional information necessary) to file
-        j=-1
+
+
+        for stream in codelist:
+            if(stream==None):
+                coded_file.write("no\n".encode("utf-8"))
+                continue
+            coded_file.write(bytes(stream))
+            coded_file.write("\n".encode("utf-8"))
+        coded_file.write("Encoded next\n".encode("utf-8"))
+        coded_file.write(bytes(filecode))
+
+
 
 
 def huffmandecodefile(filename):
     """ Decode a Huffman-Coded File"""
     #Code Missing:
+    with open(filename, "rb") as codedFile:
+        fileCode = bitstring.BitString()
+
+        codelist2 = []
+        while True:
+            c = codedFile.readline()
+            if(c == "Encoded next\n".encode("utf-8")):
+                break
+            codelist2.append(c[0:len(c)-1])
+        charVersion = []
+        for i in range(len(codelist2)):
+            charVersion.append(chr(i))
+
+
+
 
 #main
 filename="./LoremIpsumLong.rtf"
 huffmanencodefile(filename)
 
-#huffmandecodefile(filename + ".huf") #uncomment once this file is written
+huffmandecodefile(filename + ".huf") #uncomment once this file is written
 
 
 
