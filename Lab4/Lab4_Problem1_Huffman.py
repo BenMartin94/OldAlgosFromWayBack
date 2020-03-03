@@ -94,7 +94,7 @@ def createhuffmantree(huffmannodes):
 
     #Code Missing: Create the Huffman Node Tree using the Min Priority Queue (heap)
     while(len(node_heap)>1):
-        dummy = HuffmanNode(bytes(2))
+        dummy = HuffmanNode(bytes(257))
         left = heapq.heappop(node_heap)
         right = heapq.heappop(node_heap)
         dummy.left = left
@@ -169,7 +169,9 @@ def huffmanencodefile(filename):
             coded_file.write(bytes(stream))
             coded_file.write("\n".encode("utf-8"))
         coded_file.write("Encoded next\n".encode("utf-8"))
-        coded_file.write(bytes(filecode))
+        while(filecode.len%8!=0):
+            filecode.append(1)
+        coded_file.write(filecode.bytes)
 
 
 
