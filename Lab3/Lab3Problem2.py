@@ -61,7 +61,10 @@ def recursiveMemoLCS(x,y, memo):
         memo[len(x)-1, len(y)-1] = (recursiveMemoLCS(x[0:len(x)-1], y[0:len(y)-1],memo))+1
         return(memo[len(x)-1, len(y)-1])
     else:
+        #memo[len(x)-2, len(y)-1] = recursiveMemoLCS(x[0:len(x)-1], y,memo)
+        #memo[len(x)-1, len(y)-2] = recursiveMemoLCS(x, y[0:len(y)-1],memo)
         memo[len(x)-1, len(y)-1] = max(recursiveMemoLCS(x[0:len(x)-1], y,memo),recursiveMemoLCS(x, y[0:len(y)-1],memo))
+        #return max(memo[len(x)-2, len(y)-1], memo[len(x)-1, len(y)-2])
         return memo[len(x)-1, len(y)-1]
 #recursiveMemoLcs
 
@@ -274,7 +277,18 @@ def main():
 
     return("Program Ended Successfully")
 #main
+main()
+#memoizedLCS(x=[2,3,4,1,2],y=[2,3,4,1,2])
+
+def palindrome(S, memo):
+    if(len(S)==0):
+        return 0
+    elif(len(S)==1):
+        return 1
+    elif(S[0]==S[len(S)-1]):
+        return palindrome(S[1:len(S)-1])+2
+    else:
+        return max(palindrome(S[0:len(S)-1]), palindrome(S[1:len(S)]))
 
 
-print(main())
 
