@@ -11,7 +11,7 @@ function x = LUSolve(A, b)
   x = zeros(length(A), 1);
   for i = length(A):-1:1;
     x(i,1)=d(i,1);
-    x(i,1) = x(i,1)-A(i,i:length(A))*x(i:length(x),1)
+    x(i,1) = x(i,1)-A(i,i+1:length(A))*x(i+1:length(x),1)
     #for j = length(A):-1:i+1
      # x(i,1) = x(i,1)-A(i,j)*x(j,1);
     #endfor
