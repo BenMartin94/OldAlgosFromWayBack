@@ -176,28 +176,79 @@ def huffmanencodefile(filename):
 
 
 
+
 def huffmandecodefile(filename):
     """ Decode a Huffman-Coded File"""
     #Code Missing:
     with open(filename, "rb") as codedFile:
         fileCode = bitstring.BitString()
-
+        decodedFile = []
         codelist2 = []
         while True:
             c = codedFile.readline()
             if(c == "Encoded next\n".encode("utf-8")):
                 break
             codelist2.append(c[0:len(c)-1])
+        for i in range(len(codelist2)):#get the codes in a nice binary string
+            codelist2[i] = decode((str(codelist2[i]).replace('b\'', '')).split('\\x0'))[0:-1]
         charVersion = []
         for i in range(len(codelist2)):
             charVersion.append(chr(i))
+        temp = bitstring.BitString()
+        while True:
+            if(len(temp.bin)<30):#buffer in some more
+                c = codedFile.read(1)
+                temp.append(c)
+            print(str(len(decodedFile))+" bytes decoded\n")
+            if(c==b''):
+                break
+            if(len(temp.bin)>=50):
+                print("im a dissapointment")
+                break
+
+            for j in range(len(temp.bin)):
+                returned, index = subStringLoop(temp.bin[0:j],codelist2)
+                if returned != -1:
+                    decodedFile.append(charVersion[index])
+                    temp = temp[len(returned):len(temp.bin)]
+                    break
+
+
+
+            '''
+            for j in range(len(temp.bin)):
+                for i in range(len(codelist2)):
+                    if(codelist2[i] == temp.bin[0:j]):
+                        decodedFile.append(charVersion[i])
+                        temp = temp[j:len(temp)]
+                        #breaks the outer loop
+
+                        break
+            '''
+    with open("decoded.txt", 'wb') as decoded:
+        for char in decodedFile:
+            decoded.write(bytes(char, 'utf-8'))
+
+
+def subStringLoop(bitString, codelist2):
+    for i in range(len(codelist2)):
+        if (codelist2[i] == bitString):
+            return codelist2[i], i
+    return -1, -1
+
+
+def decode(input):
+    toRet= ""
+    for i in input:
+        toRet+=i
+    return toRet
 
 
 
 
 #main
 filename="./LoremIpsumLong.rtf"
-huffmanencodefile(filename)
+#huffmanencodefile(filename)
 
 huffmandecodefile(filename + ".huf") #uncomment once this file is written
 
