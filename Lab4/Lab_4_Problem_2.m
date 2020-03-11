@@ -1,21 +1,26 @@
 clc
 clear all
 close all
-A = [1 2 3;
-     2 5 2;
-     3 7 4];
 
-b = [1;2;1];
 
-n=10
+n=500;
 A = 10*randn(n,n);
-b = 10*randn(n,1);
-x1 = A\b;
+tic;
 LU = LUDecomposition(A);
+decompTime1 = toc;
+solveTimes1 = zeros(10,1);
+for i = 1:10
+  b = 10*randn(n,1);
+  x1 = A\b;
+  tic;
+  x2=LUSolve(LU,b);
+  temp = toc;
 
-x2=LUSolve(LU,b);
+  if(isequal(round(x1*100),round(x2*100)))
+    solveTimes1(i) = temp;
+  endif
+endfor
 
-isequal(round(x1*100),round(x2*100));
 
 N = 8;
 solveTimes = zeros(N,1);
