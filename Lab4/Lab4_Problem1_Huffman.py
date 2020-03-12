@@ -215,16 +215,7 @@ def huffmandecodefile(filename):
 
 
 
-            '''
-            for j in range(len(temp.bin)):
-                for i in range(len(codelist2)):
-                    if(codelist2[i] == temp.bin[0:j]):
-                        decodedFile.append(charVersion[i])
-                        temp = temp[j:len(temp)]
-                        #breaks the outer loop
-
-                        break
-            '''
+            
     with open("decoded.txt", 'wb') as decoded:
         for char in decodedFile:
             decoded.write(bytes(char, 'utf-8'))
@@ -248,25 +239,10 @@ def decode(input):
 
 #main
 filename="./LoremIpsumLong.rtf"
-#huffmanencodefile(filename)
+huffmanencodefile(filename)
 
-#huffmandecodefile(filename + ".huf") #uncomment once this file is written
+huffmandecodefile(filename + ".huf") #uncomment once this file is written
 
 
-def recursiverodcut(p,n):
-    """ Recursively  optimize  the  revenue  on   selling   a  rod  of  length  n  with  length   prices   p.910"""
-    if(n == 0):
-        return 0
 
-    r = -10
-    for i in range(1, n+1):
-        r = max(r, p[i-1] + recursiverodcut(p,  n-i))  #zero based access  for   price  p
-
-    return r
-    #main entry point
-n = 18
-p = np.random.randint(1,n,n)
-print("Rodcutting problem with n = ", n)
-print("Price   list   = ",  p)
-print(recursiverodcut(p,  n))
 
