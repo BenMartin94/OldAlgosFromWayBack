@@ -37,7 +37,7 @@ class HuffmanNode:
         return self.count < other.count
 
     #print function (non-recursive)
-    def print(self):
+    def myPrint(self):
         print("Huffman Node: ")
         print("\tCharacter = ", self.character)
         print("\tIndex = ", self.index)
@@ -75,8 +75,13 @@ def getfilecharactercounts(filename):
     #Code Missing: mark and delete any characters that don't occur in the file
     #i.e., nodes should be as long as the number of unique characters in the file (not 256 things long)
     #Hint: Eliminate zero counts, sorting may help.
-
-
+    nodes.sort(key=lambda x:x.count)
+    cutat = 0
+    for i in range(len(nodes)):
+        if(nodes[i].count!=0):
+            cutat = i
+            break
+    nodes = nodes[cutat:len(nodes)]
     return nodes
 
 
@@ -88,7 +93,14 @@ def createhuffmantree(huffmannodes):
     heapq.heapify(node_heap)                 #create heap
 
     #Code Missing: Create the Huffman Node Tree using the Min Priority Queue (heap)
-
+    while(len(node_heap)>1):
+        dummy = HuffmanNode(bytes(257))
+        left = heapq.heappop(node_heap)
+        right = heapq.heappop(node_heap)
+        dummy.left = left
+        dummy.right = right
+        dummy.count = left.count+right.count
+        heapq.heappush(node_heap, dummy)
     return heapq.heappop(node_heap) #final node is the tree we want
 
 
@@ -150,16 +162,86 @@ def huffmanencodefile(filename):
         #Code Missing: Write the bitstring (and any additional information necessary) to file
 
 
+        for stream in codelist:
+            if(stream==None):
+                coded_file.write("no\n".encode("utf-8"))
+                continue
+            coded_file.write(bytes(stream))
+            coded_file.write("\n".encode("utf-8"))
+        coded_file.write("Encoded next\n".encode("utf-8"))
+        while(filecode.len%8!=0):
+            filecode.append(1)
+        coded_file.write(filecode.bytes)
+
+
+
+
+
 def huffmandecodefile(filename):
     """ Decode a Huffman-Coded File"""
     #Code Missing:
+    with open(filename, "rb") as codedFile:
+        fileCode = bitstring.BitString()
+        decodedFile = []
+        codelist2 = []
+        while True:
+            c = codedFile.readline()
+            if(c == "Encoded next\n".encode("utf-8")):
+                break
+            codelist2.append(c[0:len(c)-1])
+        for i in range(len(codelist2)):#get the codes in a nice binary string
+            codelist2[i] = decode((str(codelist2[i]).replace('b\'', '')).split('\\x0'))[0:-1]
+        charVersion = []
+        for i in range(len(codelist2)):
+            charVersion.append(chr(i))
+        temp = bitstring.BitString()
+        while True:
+            if(len(temp.bin)<30):#buffer in some more
+                c = codedFile.read(1)
+                temp.append(c)
+            print(str(len(decodedFile))+" bytes decoded\n")
+            if(c==b''):
+                break
+            if(len(temp.bin)>=50):
+                print("im a dissapointment")
+                break
+
+            for j in range(len(temp.bin)):
+                returned, index = subStringLoop(temp.bin[0:j],codelist2)
+                if returned != -1:
+                    decodedFile.append(charVersion[index])
+                    temp = temp[len(returned):len(temp.bin)]
+                    break
+
+
+
+            
+    with open("decoded.txt", 'wb') as decoded:
+        for char in decodedFile:
+            decoded.write(bytes(char, 'utf-8'))
+
+
+def subStringLoop(bitString, codelist2):
+    for i in range(len(codelist2)):
+        if (codelist2[i] == bitString):
+            return codelist2[i], i
+    return -1, -1
+
+
+def decode(input):
+    toRet= ""
+    for i in input:
+        toRet+=i
+    return toRet
+
+
+
 
 #main
 filename="./LoremIpsumLong.rtf"
 huffmanencodefile(filename)
 
-#huffmandecodefile(filename + ".huf") #uncomment once this file is written
-
+huffmandecodefile(filename + ".huf") #uncomment once this file is written
 
 
 
