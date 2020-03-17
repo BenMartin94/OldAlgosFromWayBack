@@ -1,4 +1,4 @@
-function results = spaceship(spaceship_angle_degrees)
+function results = spaceshipWPlot(spaceship_angle_degrees)
 
 %given a departure angle from earth this function calculates the minimum
 %distance between a rocketship (with hardcoded parameters herein) and the
@@ -7,7 +7,7 @@ function results = spaceship(spaceship_angle_degrees)
 %constants
 G = 6.67384e-11;
 tolerance = 1; %this will ensure we don't ever get divide by zero if things collide
-plot_on = 0; %do we want to see plots?
+plot_on = 1; %do we want to see plots?
 
 %each of the following arrays represent:
 %sun, earth, mars, jupiter, saturn, uranus
