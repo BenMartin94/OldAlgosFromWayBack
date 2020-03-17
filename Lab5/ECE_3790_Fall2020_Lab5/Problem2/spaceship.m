@@ -1,4 +1,4 @@
-function results = spaceshipSimulation(spaceship_angle_degrees)
+function results = spaceship(spaceship_angle_degrees)
 
 %given a departure angle from earth this function calculates the minimum
 %distance between a rocketship (with hardcoded parameters herein) and the
