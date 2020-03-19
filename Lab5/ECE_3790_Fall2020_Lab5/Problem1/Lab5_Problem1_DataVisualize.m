@@ -2,7 +2,7 @@ close all
 clear all
 clc
 
-data = csvread('./Lab5_Problem1_Data.csv');
+data = dlmread('./Lab5_Problem1_Data.csv');
 
 
 days = data(:,1);
