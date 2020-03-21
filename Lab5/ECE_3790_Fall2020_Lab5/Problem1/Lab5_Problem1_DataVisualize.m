@@ -37,37 +37,6 @@ title("Ranges");
 xlabel("Days");
 ylabel("Cases");
 
-%testing linar
-data = zeros(length(chinaDays), 3);
-data(:, 1) = ones(length(chinaDays),1)
-data(:,2) = chinaDays;
-data(:,3) = chinaRange;
-[asc, r2] = linearregression(data)
-
-chinaLFH = @(x) asc(1) + asc(2)*x;
-figure;
-hold on
-fplot(chinaLFH, [0, max(chinaDays)]);
-plot(chinaDays, chinaRange);
-legend()
-
-% testing poly
-[plys, r2] = polynomialregression(chinaRange, 3)
-chinaCFH = @(x) plys(1)+plys(2)*x+plys(3)*x.^2+plys(4)*x^3;
-figure;
-hold on
-fplot(chinaCFH, [0, max(chinaDays)]);
-plot(chinaDays, chinaRange);
-legend()
-
-%testing exp
-[plys, r2] = exponentialregression(chinaRange)
-chinaEFH = @(x) plys(1)*exp(plys(2)*x);
-figure;
-hold on
-fplot(chinaEFH, [0, max(chinaDays)]);
-plot(chinaDays, chinaRange);
-legend()
 
 %%%%%%%%%%%VALIDATION%%%%%%%%%%%%%%%%%
 a0 = 0.5;
@@ -75,7 +44,7 @@ a1 = 0.1;
 a2 = 0.9;
 a3 = 0.8;
 y = @(x) a0+a1*x+a2*x.^2+a3*x.^3;
-x = 10:100;
+x = 1:100;
 yout = y(x);
 [plys, r2] = polynomialregression(yout, 3);
 assert(r2==1);
@@ -84,9 +53,13 @@ assert(r2==1);
 a0 = 1.1;
 a1 = 0.3;
 y = @(x) a0*exp(a1*x);
-x = 10:100;
+x = 1:100;
 yout = y(x);
+figure
+scatter(x,yout);
+hold on
 [plys, r2] = exponentialregression(yout);
+fplot(@(x) plys(1)*exp(plys(2)*(x)), [min(x), max(x)]);
 assert(r2==1);
 
 
@@ -95,72 +68,81 @@ assert(r2==1);
 [plys, r2] = polynomialregression(chinaRange, 3)
 chinaCFH = @(x) plys(1)+plys(2)*x+plys(3)*x.^2+plys(4)*x^3;
 figure;
+subplot(2,1,1);
 hold on
 fplot(chinaCFH, [0, max(chinaDays)]);
-plot(chinaDays, chinaRange);
+scatter(chinaDays, chinaRange);
 legend()
-title("China");
+title(strcat("China Polynomial Model r^2 = ", mat2str(r2)(1:4)));
 xlabel("Days");
 ylabel("Confirmed cases");
 
 [plys, r2] = exponentialregression(chinaRange)
 chinaEFH = @(x) plys(1)*exp(plys(2)*x);
-figure;
+subplot(2,1,2);
 hold on
 fplot(chinaEFH, [0, max(chinaDays)]);
-plot(chinaDays, chinaRange);
+scatter(chinaDays, chinaRange);
 legend()
-title("China");
+title(strcat("China Exponential Model r^2 = ", mat2str(r2)(1:4)));
 xlabel("Days");
 ylabel("Confirmed cases");
+saveas(gcf, "ChinaRegression.png");
 %USA
 startingDay = min(usaDays);
 [plys, r2] = polynomialregression(usaRange, 3)
-usaCFH = @(x) plys(1)+plys(2)*(x-startingDay)+plys(3)*(x-startingDay).^2+plys(4)*(x-startingDay)^3;
+usaCFH = @(x) plys(1)+plys(2)*(x)+plys(3)*(x).^2+plys(4)*(x)^3;
 figure;
+subplot(2,1,1);
 hold on
-fplot(usaCFH, [min(usaDays), max(usaDays)]);
-plot(usaDays, usaRange);
+fplot(usaCFH, [0, length(usaDays)]);
+scatter(usaDays-startingDay+1,usaRange);
 legend()
-title("USA");
-xlabel("Days");
+title(strcat("USA Polynomial Model r^2 = ", mat2str(r2)(1:4)));
+xlabel("Days after day 47");
 ylabel("Confirmed cases");
 
 [plys, r2] = exponentialregression(usaRange)
-usaEFH = @(x) plys(1)*exp(plys(2)*(x-startingDay));
-figure;
+usaEFH = @(x) plys(1)*exp(plys(2)*(x));
+subplot(2,1,2);
 hold on
-fplot(usaEFH, [min(usaDays), max(usaDays)]);
-plot(usaDays, usaRange);
+fplot(usaEFH, [1, length(usaDays)]);
+scatter(usaDays-startingDay+1, usaRange);
 legend()
-title("USA");
-xlabel("Days");
+title(strcat("USA Exponential Model r^2 = ", mat2str(r2)(1:4)));
+xlabel("Days after day 47");
 ylabel("Confirmed cases");
 
+saveas(gcf, "USARegression.png");
 %%%WORLD
 
 [plys, r2] = polynomialregression(worldRange, 3)
 startingDay = min(worldDays);
-worldCFH = @(x) plys(1)+plys(2)*(x-startingDay)+plys(3)*(x-startingDay).^2+plys(4)*(x-startingDay)^3;
+worldCFH = @(x) plys(1)+plys(2)*(x)+plys(3)*(x).^2+plys(4)*(x)^3;
 figure;
+subplot(2,1,1);
 hold on
-fplot(worldCFH, [min(worldDays), max(worldDays)]);
-plot(worldDays, worldRange);
+fplot(worldCFH, [1, length(worldDays)]);
+scatter(worldDays-startingDay+1, worldRange);
 legend()
-title("World");
-xlabel("Days");
+title(strcat("World Polynomial Model r^2 = ", mat2str(r2)(1:4)));
+
+xlabel("Days after day 27");
 ylabel("Confirmed cases");
 
 [plys, r2] = exponentialregression(worldRange)
-worldEFH = @(x) plys(1)*exp(plys(2)*(x-startingDay));
-figure;
+worldEFH = @(x) plys(1)*exp(plys(2)*(x));
+subplot(2,1,2);
+
 hold on
-fplot(worldEFH, [min(worldDays), max(worldDays)]);
-plot(worldDays, worldRange);
+fplot(worldEFH, [1, length(worldDays)]);
+scatter(worldDays-startingDay+1, worldRange);
 legend()
-title("World");
-xlabel("Days");
+title(strcat("World Exponential Model r^2 = ", mat2str(r2)(1:4)));
+
+xlabel("Days after day 27");
 ylabel("Confirmed cases");
+saveas(gcf, "WorldRegression.png");
 
 
 
