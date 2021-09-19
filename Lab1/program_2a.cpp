@@ -1,5 +1,7 @@
 #include <iostream>
-#include <mpi.h>						                    //Use C-version of MPI, include mpi++.h for C++ bindings.
+#include <mpi.h>					                    //Use C-version of MPI, include mpi++.h for C++ bindings.
+
+#include <string.h>
 
 using namespace std;
 
@@ -26,6 +28,7 @@ int main(int argc, char** argv)
         char host[MPI_MAX_PROCESSOR_NAME];
         for (int irank = 1; irank < nproc; irank++)
         {
+            MPI_Recv(host, MPI_MAX_PROCESSOR_NAME, MPI_BYTE, irank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             //Receive name from processor with rank irank - store in "host"
             std::cout << "Node " << irank << " is processor " << host << std::endl;
         }
@@ -33,7 +36,9 @@ int main(int argc, char** argv)
     }
     else
     {
+        
         //Send processor_name to processor 0
+        MPI_Send(processor_name, MPI_MAX_PROCESSOR_NAME, MPI_BYTE, 0, 0, MPI_COMM_WORLD);
     }
 	MPI_Finalize();
 

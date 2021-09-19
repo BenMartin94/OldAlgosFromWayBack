@@ -9,6 +9,7 @@ int main(int argc, char** argv)
 {
 	int rank = 0;
 	int nproc = 1;
+	#ifdef HAVEMPI
 	int namelength;
 	char processor_name[MPI_MAX_PROCESSOR_NAME];
 
@@ -16,11 +17,14 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &nproc);			        //Get the number of processors
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);			        //Get my rank
 	MPI_Get_processor_name(processor_name, &namelength);	//Get processor name
-
+	
 	//Output
 	std::cout << "Hello, my name is " << processor_name << " and I am number " << rank << " of " << nproc << std::endl;
 
 	MPI_Finalize();
-
+	#endif
+	#ifndef HAVEMPI
+	std::cout << "Hello from processor " << rank << " of " << nproc << std::endl;
+	#endif
 	return 0;
 }
