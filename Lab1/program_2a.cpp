@@ -24,21 +24,23 @@ int main(int argc, char** argv)
     {
         std::cout << "Number of processors is " << nproc << std::endl;
         std::cout << "Node " << rank << " is processor " << processor_name << std::endl;
-
+        MPI_Request foo2;
         char host[MPI_MAX_PROCESSOR_NAME];
         for (int irank = 1; irank < nproc; irank++)
         {
-            MPI_Recv(host, MPI_MAX_PROCESSOR_NAME, MPI_BYTE, irank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Irecv(host, MPI_MAX_PROCESSOR_NAME, MPI_BYTE, irank, 0, MPI_COMM_WORLD, &foo2);
             //Receive name from processor with rank irank - store in "host"
+            MPI_Wait(&foo2, MPI_STATUS_IGNORE);
+
             std::cout << "Node " << irank << " is processor " << host << std::endl;
         }
         std::cout << work << std::endl;
     }
     else
     {
-        
+        MPI_Request foo;
         //Send processor_name to processor 0
-        MPI_Send(processor_name, MPI_MAX_PROCESSOR_NAME, MPI_BYTE, 0, 0, MPI_COMM_WORLD);
+        MPI_Isend(processor_name, MPI_MAX_PROCESSOR_NAME, MPI_BYTE, 0, 0, MPI_COMM_WORLD, &foo);
     }
 	MPI_Finalize();
 
