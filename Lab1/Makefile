@@ -1,5 +1,5 @@
 cmd = mpicxx -o
-cores = 16
+cores = 4
 runcmd = mpirun --oversubscribe -v -np $(cores)
 
 
@@ -31,8 +31,7 @@ all: 1a 1b 1c 2a 2b 3a
 	$(cmd) p2b $(p2b)
 
 3a: $(p3a)
-	echo "3a isnt done yet"
-	
+	$(cmd) p3a $(p3a)	
 	
 run1a:
 	$(runcmd) p1a
@@ -49,5 +48,8 @@ run2a:
 
 run2b:
 	$(runcmd) p2b
+
+run3a:
+	$(runcmd) p3a
 	
 
