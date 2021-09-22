@@ -26,6 +26,12 @@ all: 1a 1b 1c 2a 2b 3a
 
 2a: $(p2a)
 	$(cmd) p2a $(p2a)
+
+2b: $(p2b)
+	$(cmd) p2b $(p2b)
+
+3a: $(p3a)
+	echo "3a isnt done yet"
 	
 	
 run1a:
@@ -40,5 +46,8 @@ run1c:
 
 run2a:
 	$(runcmd) p2a
+
+run2b:
+	$(runcmd) p2b
 	
 

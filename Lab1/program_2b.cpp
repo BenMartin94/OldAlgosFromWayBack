@@ -20,6 +20,8 @@ int main(int argc, char** argv)
 	MPI_Get_processor_name(processor_name, &namelength);	//Get processor name
 
     ofstream out_to_file;                                   //You'll need an include for this
+
+	out_to_file.open(to_string(rank) + "of" + to_string(nproc) + "processes");
     
     //Open the output file HERE using a unique name based on rank and nproc
     //Hint: you can use ostringstream to produce the filename as a combination of
