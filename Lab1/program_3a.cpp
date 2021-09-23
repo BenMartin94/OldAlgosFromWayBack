@@ -34,6 +34,8 @@ int main(int argc, char** argv)
         std::cin >> nvalues_per_proc;
 		
         double time1, time2;
+        time1 = MPI_Wtime();
+    
        
         srand(clock());										//Seed RNG
 
@@ -82,8 +84,8 @@ int main(int argc, char** argv)
         }
 
 		std::cout << "Total Sum on all Processors (Manual sum): " << total_sum_manual << std::endl;
-
-        //std::cout << "Total time to compute: " << time2-time1 << " seconds" << std::endl;
+        time2 = MPI_Wtime();
+        std::cout << "Total time to compute: " << time2-time1 << " seconds" << std::endl;
     }
     else
     {

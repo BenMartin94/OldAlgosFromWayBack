@@ -12,7 +12,9 @@ p2b = program_2b.cpp
 
 p3a = program_3a.cpp
 
-all: 1a 1b 1c 2a 2b 3a
+p4a = program_4a.cpp
+
+all: 1a 1b 1c 2a 2b 3a 4a
 
 1a: $(p1a)
 	$(cmd) p1a $(p1a)
@@ -32,6 +34,9 @@ all: 1a 1b 1c 2a 2b 3a
 
 3a: $(p3a)
 	$(cmd) p3a $(p3a)	
+
+4a: $(p4a)
+	$(cmd) p4a $(p4a)
 	
 run1a:
 	$(runcmd) p1a
@@ -51,5 +56,8 @@ run2b:
 
 run3a:
 	$(runcmd) p3a
+
+run4a:
+	$(runcmd) p4a
 	
 
