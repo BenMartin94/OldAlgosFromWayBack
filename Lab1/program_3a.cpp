@@ -33,19 +33,20 @@ int main(int argc, char** argv)
         std::cout << "Enter the number of random values to be summed by each processor:" << std::endl;
         std::cin >> nvalues_per_proc;
 		
-        double time1, time2;
-        time1 = MPI_Wtime();
+        double time1Serial, time2Serial;
+        double time1Parallel, time2Parallel;
     
        
         srand(clock());										//Seed RNG
 
         vector<double> full_list(nvalues_per_proc*nproc);
         generate_randoms(&full_list, nvalues_per_proc*nproc);
+        
+        time1Parallel = MPI_Wtime();
         for(int irank = 1; irank<nproc; irank++){
             vector<double> toSend = subvec(full_list, (irank) * nvalues_per_proc, (irank+1) * nvalues_per_proc);
             MPI_Send(&toSend[0], nvalues_per_proc, MPI_DOUBLE, irank, 9, MPI_COMM_WORLD);
         }
-
         //Generate and distribute the full_list of values to all other processors
         //REMEMBER: the other processors don't know what nvalues_per_proc is
 
@@ -76,16 +77,22 @@ int main(int argc, char** argv)
 
         std::cout << "Total Sum on all Processors (MPI_Reduce): " << total_sum_reduce << std::endl;
 
+        time2Parallel = MPI_Wtime();
 
+        time1Serial = MPI_Wtime();
         double total_sum_manual = 0;
         for(int i = 0;i<full_list.size(); i++){
             //cout << full_list[i] << endl;
             total_sum_manual += full_list[i];
         }
+        time2Serial = MPI_Wtime();
 
 		std::cout << "Total Sum on all Processors (Manual sum): " << total_sum_manual << std::endl;
-        time2 = MPI_Wtime();
-        std::cout << "Total time to compute: " << time2-time1 << " seconds" << std::endl;
+        
+        std::cout << "Total time to compute in parallel: " << time2Parallel-time1Parallel << " seconds" << std::endl;
+        std::cout << "Total time to compute in serial: " << time2Serial-time1Serial << " seconds" << std::endl;
+        std::cout << "Speedup Factor: " << (time2Serial-time1Serial)/(time2Parallel-time1Parallel) << std::endl;
+
     }
     else
     {
