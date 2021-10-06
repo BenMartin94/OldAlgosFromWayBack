@@ -137,6 +137,99 @@ void imageBlur(const cv::Mat &in, cv::Mat &out, int level, int rowStart, int row
     }
 }
 
+void adjustSaturation(cv::Vec3b &in, cv::Vec3b &out, double newSat){
+    double Bprime = in[0]/255.0;
+    double Gprime = in[1]/255.0;
+    double Rprime = in[2]/255.0;
+    double cmin = min({Bprime, Gprime, Rprime});
+    double cmax = max({Bprime, Gprime, Rprime});
+    double delta = cmax-cmin;
+    double h;
+    if(delta == 0) {
+        h = 0;
+        
+    }
+    else if(cmax==Rprime) {
+        h = 60 * fmod(((Gprime-Bprime)/delta), 6);
+    }
+    else if(cmax==Gprime) {
+        h = 60 * (((Bprime-Rprime)/delta)+2);
+    }
+    else h = 60 * (((Rprime-Gprime)/delta)+4);
+
+    double s;   
+    if(cmax == 0) s = 0;
+    else s = delta/cmax;
+
+    double v = cmax;
+
+    if(h<0){
+        //gotta wrap it back now
+        h += 360;
+    }
+    else if(h >= 360){
+        h-=360;
+    }
+
+    //cout<<h<<endl<<s<<endl<<v<<endl;
+    assert(h>=0 && h<360);
+    assert(s>=0);
+    assert(v<=1);
+    s = newSat;
+
+    double C = v*s;
+    double X = C*(1-abs(((int)(h/60)%2)-1));
+    double m = v-C;
+
+    if(h<60){
+        Rprime = C;
+        Gprime = X;
+        Bprime = 0;
+    }
+    else if(h<120){
+        Rprime = X;
+        Gprime = C;
+        Bprime = 0;
+    }
+    else if(h<180){
+        Rprime = 0;
+        Gprime = C;
+        Bprime = X;
+    }
+    else if(h<240){
+        Rprime = 0;
+        Gprime = X;
+        Bprime = C;
+    }
+    else if(h<300){
+        Rprime = X;
+        Gprime = 0;
+        Bprime = C;
+    }
+    else if(h<360){
+        Rprime = C;
+        Gprime = 0;
+        Bprime = X;
+    }
+
+    out[2] = (Rprime+m)*255;
+    out[1] = (Gprime+m)*255;
+    out[0] = (Bprime+m)*255;
+
+}
+
+void imageSaturation(const cv::Mat &in, cv::Mat &out, double newSat, int rowStart, int rowStop){
+    out = in.clone();
+    for(int irow = rowStart; irow<=rowStop; irow++){
+        for(int icol = 0; icol<out.cols; icol++){
+            cv::Vec3b changed;
+            cv::Vec3b current = in.at<cv::Vec3b>(irow, icol);
+            adjustSaturation(current, changed, newSat);
+            out.at<cv::Vec3b>(irow, icol) = changed;
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     cv::Mat image;
@@ -149,7 +242,15 @@ int main(int argc, char** argv)
 
         cv::Mat processed_image;
         //imageColor(image, processed_image, 1, 0, image.rows/2);
-        imageBlur(image, processed_image, 2, 0, image.rows/2);
+        //imageBlur(image, processed_image, 1, 0, image.rows/2);
+        imageSaturation(image, processed_image, 0.5, 0, image.rows/2);
+        /*cv::Vec3b color;
+        cv::Vec3b idc;
+        color.val[0] = 1;
+        color.val[1] = 13;
+        color.val[2] = 200;
+        adjustSaturation(color, idc, 0);*/
+
         cv::namedWindow("Original Image", cv::WINDOW_AUTOSIZE );	// Create a window for display.
         cv::imshow("Original Image", image);                   				// Show our image inside it.
         
