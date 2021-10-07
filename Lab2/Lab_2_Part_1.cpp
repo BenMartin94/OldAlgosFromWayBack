@@ -11,6 +11,14 @@ typedef struct{
     int process_type;
 }imageProcessingDescriptorT;
 
+enum IMAGE_PROCESS_TYPE{
+    IMAGE_PROCESS_TYPE_MIN = 0,
+    IMAGE_PROCESS_TYPE_BLUR,
+    IMAGE_PROCESS_TYPE_RETAIN,
+    IMAGE_PROCESS_TYPE_SATURATE,
+    IMAGE_PROCESS_TYPE_MAX
+};
+
 void parallelRange(int globalStart, int globalStop, int irank, int nproc, int &localStart, int &localStop, int &localCount){
     int nrows = globalStop - globalStart;
     int divisor = nrows/nproc;
