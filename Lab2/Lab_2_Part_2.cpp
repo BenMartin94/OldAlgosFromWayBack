@@ -59,7 +59,7 @@ int main(int argc, char**argv){
         black.val[2] = 0;
         
         for(int irow = 0; irow<blackImage.rows; irow++){
-            black.val[0] = irow;
+            //black.val[0] = irow;
             for(int icol = 0; icol<blackImage.cols; icol++){
                 blackImage.at<cv::Vec3b>(irow, icol) = black;
             }
@@ -67,12 +67,18 @@ int main(int argc, char**argv){
         int myStart;
         int myStop;
         int myCount;
+        int myWorkStart;
+        int myWorkStop;
         for(int irank = 0; irank<nproc; irank++){
             int localStart;
             int localStop;
             int localCount;
+            int localWorkStart;
+            int localWorkStop; // the work means excluding halos
 
             parallelRange(0, m, irank, nproc, localStart, localStop, localCount);
+            localWorkStart = localStart;
+            localWorkStop = localStop;
             localStart -= h;
             localStop += h;
         
@@ -87,60 +93,88 @@ int main(int argc, char**argv){
                 myStart = localStart;
                 myStop = localStop;
                 myCount = localCount;
-                cout<<"Rank: " << rank << " starts at " << myStart << " ends at " << myStop << " and has halo value " << h << endl;
+                myWorkStart = localWorkStart;
+                myWorkStop = localWorkStop;
+                cout<<"Rank: " << rank << " starts at " << myStart << " ends at " << myStop << " and is processing " << myWorkStart << "-" << myWorkStop << endl;
 
             }
             else{
-                int dataBuf[3] = {localStart, localStop, h};
-                MPI_Send(dataBuf, 3, MPI_INT, irank, 99, MPI_COMM_WORLD);
-                vector<cv::Vec3b> rows(0);
-                for(int irow = localStart; irow<=localStop; irow++){
-                    for(int icol = 0; icol<blackImage.cols; icol++){
-                        cv::Vec3b pixel = blackImage.at<cv::Vec3b>(irow, icol);
-                        //cout<<pixel<<endl;
-                        rows.push_back(pixel);
-                        //cout<<blackImage.at<cv::Vec3b>(irow, icol)<<endl;
-                    }
-                }
-                
-                for(int i = 0; i<localCount*n; i++){
-                    cout<<(int)blackImage.data[localStart*n*3 + i] << " ";
-                }
-                
-                
+                int dataBuf[4] = {localStart, localStop, localWorkStart, localWorkStop};
+                MPI_Send(dataBuf, 4, MPI_INT, irank, 99, MPI_COMM_WORLD);      
                 MPI_Send(&blackImage.data[localStart*n*3], localCount, rowOfN, irank, 99, MPI_COMM_WORLD);
 
             }
         }
         cv::Mat alteredImage = blackImage.clone();
         
+        for(int irow = myWorkStart; irow<myWorkStop; irow++){
+            for(int icol = 0; icol<alteredImage.cols; icol++){
+                alteredImage.at<cv::Vec3b>(irow, icol).val[rank] = 255;
+            }
+        }
+
+        cv::namedWindow("Partial image rank 0", cv::WINDOW_AUTOSIZE );	// Create display window.
+        cv::imshow("Partial image rank 0", alteredImage);      // Show our image inside it.
+    
+        cv::waitKey(10000);	
+        int positioning[2];
+        
+        for(int i = 1; i<nproc; i++){
+            cout<<"Getting the image from " << i << endl;
+            MPI_Recv(positioning, 2, MPI_INT, i, 99, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            // postioning[0] is the starting place to put the data
+            int amountToRead = positioning[1] - positioning[0] + 1;
+            //cout<<"rank 0 received "<<amountToRead<<" rows"<<endl;
+            MPI_Recv(&alteredImage.data[positioning[0]*n*3], amountToRead, rowOfN, i, 99, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+
         cv::namedWindow("Full image", cv::WINDOW_AUTOSIZE );	// Create display window.
-        cv::imshow("Full image", blackImage);      // Show our image inside it.
+        cv::imshow("Full image", alteredImage);      // Show our image inside it.
     
         cv::waitKey(10000);	
 
     }
     else{
-        int dataBuf[3];
-        MPI_Recv(dataBuf, 3, MPI_INT, 0, 99, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        cout<<"Rank: " << rank << " starts at " << dataBuf[0] << " ends at " << dataBuf[1] << " and has halo value " << dataBuf[2] << endl;
+        int dataBuf[4];
+        MPI_Recv(dataBuf, 4, MPI_INT, 0, 99, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        cout<<"Rank: " << rank << " starts at " << dataBuf[0] << " ends at " << dataBuf[1] << " and is processing " << dataBuf[2] << "-" << dataBuf[3] << endl;
         int localCount = dataBuf[1] - dataBuf[0] + 1;
-        vector<cv::Vec3b> rows(localCount*n);
+        int localWorkCount = dataBuf[3] - dataBuf[2] + 1;
+        cout<<"but locally on this processor I will actually start processing at " << dataBuf[2] - dataBuf[0]<< " and go for " << localWorkCount << endl;
+
+
+        
+        //assert(localWorkCount == (dataBuf[3] - dataBuf[1]) - (dataBuf[2] - dataBuf[0]));
+
+        // the values given are in global coordinates but I need local to this processors image.
+        // the offset is workStart - start
+        int rowOffset = dataBuf[2] - dataBuf[0];
+
         cv::Mat myImage(localCount, n, CV_8UC3);
 
+        cout<<"Rank: " << rank << " has an image " << myImage.rows << "rows" <<endl;
+
         MPI_Recv(&myImage.data[0], localCount*n, rowOfN, 0, 99, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        /*
-        for(int irow = 0; irow<localCount; irow++){
-            for(int icol = 0; icol<n; icol++){
-                myImage.at<cv::Vec3b>(irow, icol) = rows[irow*n + icol];
-            }
-        }*/
-        cv::String name("ummmm " + (char)rank);
         
+        for(int irow = 0; irow<localWorkCount; irow++){
+            //cout<<"Rank: " << rank << " has an image with " << myImage.rows << "rows and I am currently handling row " << irow + rowOffset <<endl;
+
+            for(int icol = 0; icol<myImage.cols; icol++){
+                myImage.at<cv::Vec3b>(irow + rowOffset, icol).val[rank] = 255;
+            }
+        }        
+
+        cv::String name("ummmm");
+        name.push_back('0' + rank);
         cv::namedWindow(name, cv::WINDOW_AUTOSIZE );	// Create display window.
         cv::imshow(name, myImage);      // Show our image inside it.
-    
+
         cv::waitKey(10000);
+
+        int positioning[2] = {dataBuf[2], dataBuf[3]};
+        //cout<<"about to send "<<localWorkCount<<endl;
+        MPI_Send(positioning, 2, MPI_INT, 0, 99, MPI_COMM_WORLD);
+        MPI_Send(&myImage.data[rowOffset*n*3], localWorkCount, rowOfN, 0, 99, MPI_COMM_WORLD);
 
     }
 
