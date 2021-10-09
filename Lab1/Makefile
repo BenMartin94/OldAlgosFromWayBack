@@ -1,5 +1,5 @@
 cmd = mpicxx -o
-cores = 4
+cores = 16
 runcmd = mpirun --oversubscribe -v -np $(cores)
 
 
