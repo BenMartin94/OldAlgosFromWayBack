@@ -85,7 +85,7 @@ void MPI_Alltoall_vecvecT(const std::vector<std::vector<T> >& data_to_send, std:
               //  std::cout<<recvbuf[count]<<std::endl;
             count++;
         }
-        std::cout<<data_to_recv[i].size()<<std::endl;
+        //std::cout<<data_to_recv[i].size()<<std::endl;
 
     }
     
