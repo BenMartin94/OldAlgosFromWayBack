@@ -16,20 +16,36 @@ void dumpVectorContents(string name, vector<double> vecToDump){
 }
 
 template<class T>
-vector<T> bucketSort(int a, int b, int rank, int p, vector<T> numsToSort){
+vector<T> bucketSort(double a, double b, int rank, int p, vector<T> numsToSort){
     vector<vector<T>> smallBuckets = vector<vector<T>>();
     vector<vector<T>> myBigBucket = vector<vector<T>>();
     for(int i = 0; i<p; i++){
         smallBuckets.push_back(vector<T>());
         
     }
+
     double delta = (b-a)/double(p);
     for(int i = 0; i<numsToSort.size(); i++){
         // the bucket to go into is
-        // floor(numsToSort[i] / delta)
-        smallBuckets[(int)floor(numsToSort[i]/delta)].push_back(numsToSort[i]);
-        
+        // i = (numberToSort-a)/delta
+        int index = (int)floor((numsToSort[i]-a)/delta);
+        if(numsToSort[i] == b){ // the math works out so that i equals p here which is out of bounds, so subtract 1
+            assert(index == p);
+            index--;
+        }
+        smallBuckets[index].push_back(numsToSort[i]);
+        /*
+        if((int)floor((-a+numsToSort[i])/delta)>=5){
+            cout<<numsToSort[i]<<" "<< delta << " " << a<<endl;
+            cout<<(-a+numsToSort[i])/(double)delta<<endl;
+            cout<<(int)floor((-a+numsToSort[i])/delta)<<endl;
+        }
+        //cout<<(int)floor((-a+numsToSort[i])/delta)<<endl;
+
+        smallBuckets[(int)floor((-a+numsToSort[i])/delta)].push_back(numsToSort[i]);
+        */
     }
+
     MPI_Alltoall_vecvecT(smallBuckets, myBigBucket);
 
     
@@ -130,7 +146,18 @@ int main(int argc, char** argv){
         
         randNums.push_back(randNum);
     }
-    vector<double> sortedList = bucketSort(a, b, rank, nproc, randNums);
+
+    // lets find the range of the data now
+
+    double localMax = *max_element(randNums.begin(), randNums.end());
+    double globalMax;
+    double localMin = *min_element(randNums.begin(), randNums.end());
+    double globalMin;
+    MPI_Allreduce(&localMax, &globalMax, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+    MPI_Allreduce(&localMin, &globalMin, 1, MPI_DOUBLE, MPI_MIN, MPI_COMM_WORLD);
+
+
+    vector<double> sortedList = bucketSort(globalMin, globalMax, rank, nproc, randNums);
     dumpVectorContents("Rank" + to_string(rank), sortedList);
 
     if(rank == 0){

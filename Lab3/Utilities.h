@@ -30,11 +30,13 @@ void MPI_Alltoall_vecvecT(const std::vector<std::vector<T> >& data_to_send, std:
     
     assert(nproc == (int)data_to_send.size());
     
+    // allocate some space for some vectors well need
     std::vector<int> send_counts(nproc);
     std::vector<int> recv_counts(nproc);
     std::vector<int> send_displacements(nproc);
     std::vector<int> recv_displacements(nproc);
     
+    //compute how much to send and the displacement in bytes
     int total_send_count = 0; //in bytes
     for (unsigned int iproc = 0; iproc < nproc; iproc++)
     {
@@ -42,9 +44,10 @@ void MPI_Alltoall_vecvecT(const std::vector<std::vector<T> >& data_to_send, std:
         send_displacements[iproc] = total_send_count;
         total_send_count += send_counts[iproc];
     }
-    
+    // send each processor how much to expect from one another
     MPI_Alltoall(&send_counts[0],1,MPI_INT, &recv_counts[0], 1, MPI_INT, MPI_COMM_WORLD);
     
+    // compute the discplacements in bytes for how much data to receive
     int total_recv_count = 0;   //in bytes
     for (unsigned int iproc = 0; iproc < nproc; iproc++)
     {
@@ -55,10 +58,11 @@ void MPI_Alltoall_vecvecT(const std::vector<std::vector<T> >& data_to_send, std:
     assert(total_send_count%sizeof(T)==0);
     assert(total_recv_count%sizeof(T)==0);
     
+
     std::vector<T> sendbuf(total_send_count/sizeof(T));
     std::vector<T> recvbuf(total_recv_count/sizeof(T));
     
-    
+    // linearize data_to_send into one vector
     int count = 0;
     for (int i = 0; i < nproc; i++)
     {
@@ -69,11 +73,13 @@ void MPI_Alltoall_vecvecT(const std::vector<std::vector<T> >& data_to_send, std:
         }
     }
 
+    // do the variable send
     MPI_Alltoallv(&sendbuf[0],&send_counts[0],&send_displacements[0],MPI_BYTE,
 				  &recvbuf[0],&recv_counts[0],&recv_displacements[0],MPI_BYTE,
 				  MPI_COMM_WORLD);
     
     data_to_recv.resize(nproc);
+    // now actually put the received data into the vector of vectors
     count = 0;
     for (int i = 0; i < nproc; i++)
     {
