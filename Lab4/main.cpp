@@ -18,8 +18,8 @@ void parallelRange(int globalStart, int globalStop, int irank, int nproc, int &l
 }
 
 void iterateBrain(cv::Mat &region, int start, int end){ // end is not inclusive
-    assert(start == 1);
-    assert(end == region.rows-1);
+    assert(start == 1 || start == 0);
+    assert(end == region.rows-1 || end == region.rows);
     cv::Mat oldRegion = region.clone();
     for(int row=start; row<end; row++){
         for(int col = 0; col<region.cols; col++){
@@ -40,10 +40,12 @@ void iterateBrain(cv::Mat &region, int start, int end){ // end is not inclusive
                 int liveCells = 0;
                 for(int nRow = -1; nRow<=1; nRow++){
                     for(int nCol = - 1; nCol<=1; nCol++){
-                        int neighborRow = (row + nRow)%end;
-                        if(neighborRow < 0) neighborRow = end-1;
-                        int neighborCol = (col + nCol)%region.cols;
-                        if(neighborCol < 0) neighborCol = region.cols - 1;
+                        int neighborRow = row + nRow;
+                        if(neighborRow < 0 || neighborRow >= region.rows) continue; // the neighbor is outside the domain
+
+                        int neighborCol = col + nCol;
+                        if(neighborCol < 0 || neighborCol >= region.cols) continue; // the neighbor is outside the domain
+
                         liveCells+= oldRegion.at<cv::Vec3b>(neighborRow, neighborCol).val[0] == 255;
                     }
                 }
@@ -68,13 +70,14 @@ void iterateDriver(cv::Mat &region, int start, int end, int haloLevels){ // end 
             cv::Vec3b cell = oldRegion.at<cv::Vec3b>(row, col);
             if(cell[0] != 0){
                 // it was active, so kill it 
-                cell[0] = 0;
+                cell[0] = 50;
+                cell[2] = 50;
                 region.at<cv::Vec3b>(row, col) = cell;
 
                 continue;
             }
-            int above = row-1;
-            if(row == 0) continue;
+            int above = row+1;
+            if(row == end) continue;
             cv::Vec3b aboveCell = oldRegion.at<cv::Vec3b>(above, col);
             if(cell[0] == 0 && aboveCell[0] == 255){
                 cell[0] = 255;
@@ -115,15 +118,29 @@ int main(int argc, char **argv){
     //assuming always 1 ghost row
     parallelRange(0, rows, rank, nproc, localStart, localStop, localCount);
     std::cout<<MPI_Wtime()<<std::endl;
-    srand(clock());
+    srand(9+rank);
     int upperGhost = localStart != 0;
     int lowerGhost = localStop != rows - 1;
     cv::Mat region(localCount+upperGhost+lowerGhost, cols, CV_8UC3);
-    if(rank == 0)
+    /*
+    if(rank == nproc-1){
+        int someCounter = 0;
         for(int i=0; i<cols; i++){
-            region.at<cv::Vec3b>(0, i).val[0] = 255;
+            region.at<cv::Vec3b>(someCounter, i).val[0] = 255;
+            someCounter = (someCounter + 1)%localCount;
         }
-    
+    } */ // initial condition for driver code ^^^^
+
+    for(int i = 0; i < localCount; i++){
+        for(int j = 0; j < cols; j++){
+            if(rand() % rows < 1){
+                region.at<cv::Vec3b>(i, j).val[0] = 255;
+                region.at<cv::Vec3b>(i, j).val[1] = 255;
+                region.at<cv::Vec3b>(i, j).val[2] = 254;
+            }
+        }
+    }
+   
 
     int indexBottomGhost = (region.rows - 1)*(cols * 3);
     for(int i = 0; i < 1000; i++){
@@ -173,9 +190,44 @@ int main(int argc, char **argv){
             }
         }
        
-        iterateDriver(region, upperGhost, region.rows-lowerGhost, 0);
-        cv::imshow("Brain", region);
-        cv::waitKey(1);
+        iterateBrain(region, upperGhost, region.rows-lowerGhost);
+
+        // index for sending the data to 0
+        int startSendingIndex = (upperGhost)*cols*3; // if no upperghost, start sending from the 0th row
+
+        if(rank == 0){
+            // collect everything and show this iteration
+            cv::Mat world(rows, cols, CV_8UC3);
+
+            int recvCounts[nproc];
+            int recvDispls[nproc];
+
+            int count = 0;
+            for(int i = 0; i<nproc; i++){
+                int theStart;
+                int theStop;
+                int theCount;
+                parallelRange(0, rows, i, nproc, theStart, theStop, theCount);
+                recvCounts[i] = theCount; // in rowsOfN
+                recvDispls[i] = count; // cumulative counter of rows of n
+                count += theCount;
+                // wow that is some confusing variable names... i feel like im in a comp 1012 midterm reading that
+
+            }
+            
+
+            MPI_Gatherv(&region.data[startSendingIndex], localCount, rowOfN, 
+                            &world.data[0], recvCounts, recvDispls, rowOfN, 0, MPI_COMM_WORLD);
+            
+            cv::imshow("Brain", world);
+
+            cv::waitKey(2);
+        }
+        else{
+            MPI_Gatherv(&region.data[startSendingIndex], localCount, rowOfN, NULL, NULL, NULL, rowOfN, 0, MPI_COMM_WORLD);
+        }
+
+        
     }
     /*
     for(int i = 0; i < rows; i++){
