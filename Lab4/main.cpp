@@ -17,6 +17,7 @@ void parallelRange(int globalStart, int globalStop, int irank, int nproc, int &l
     localCount = localStop-localStart+1;
 }
 
+// Performs the rules of brians brain
 void iterateBrain(cv::Mat &region, int start, int end){ // end is not inclusive
     assert(start == 1 || start == 0);
     assert(end == region.rows-1 || end == region.rows);
@@ -62,6 +63,25 @@ void iterateBrain(cv::Mat &region, int start, int end){ // end is not inclusive
     }
 }
 
+// proves a serail frame equals a parallel one
+void briansConfrimation(cv::Mat &prevState, cv::Mat &currentState){
+    int rows = currentState.rows;
+    int cols = currentState.cols;
+    assert(rows == prevState.rows);
+    assert(cols == prevState.cols);
+    iterateBrain(prevState, 0, rows);
+    // now prevState should be the same as currentState
+    for(int i = 0; i<rows; i++){
+        for(int j = 0; j < cols; j++){
+            for(int k = 0; k<prevState.channels(); k++){
+                assert(prevState.at<cv::Vec3b>(i, j).val[k] == currentState.at<cv::Vec3b>(i, j).val[k]);
+            }
+        }
+    }
+
+}
+
+// Used for showing ghost rows are working
 void iterateDriver(cv::Mat &region, int start, int end, int haloLevels){ // end is not inclusive
     cv::Mat oldRegion = region.clone();
 
@@ -115,13 +135,14 @@ int main(int argc, char **argv){
     int localStart;
     int localStop;
     int localCount;
-    //assuming always 1 ghost row
+
     parallelRange(0, rows, rank, nproc, localStart, localStop, localCount);
-    std::cout<<MPI_Wtime()<<std::endl;
-    srand(9+rank);
+    double startTime = MPI_Wtime();
+    srand(20+rank);
     int upperGhost = localStart != 0;
     int lowerGhost = localStop != rows - 1;
     cv::Mat region(localCount+upperGhost+lowerGhost, cols, CV_8UC3);
+    cv::Mat lastWorld(rows, cols, CV_8UC3); // the last iteration of brians brain used for verification
     /*
     if(rank == nproc-1){
         int someCounter = 0;
@@ -133,7 +154,7 @@ int main(int argc, char **argv){
 
     for(int i = 0; i < localCount; i++){
         for(int j = 0; j < cols; j++){
-            if(rand() % rows < 1){
+            if(rand() % rows < 5){
                 region.at<cv::Vec3b>(i, j).val[0] = 255;
                 region.at<cv::Vec3b>(i, j).val[1] = 255;
                 region.at<cv::Vec3b>(i, j).val[2] = 254;
@@ -143,8 +164,9 @@ int main(int argc, char **argv){
    
 
     int indexBottomGhost = (region.rows - 1)*(cols * 3);
-    for(int i = 0; i < 1000; i++){
+    for(int iteration = 0; iteration < 500; iteration++){
         // have this processor sendrecv a ghost row with its neighbor processors
+        MPI_Barrier(MPI_COMM_WORLD);
         if(rank % 2 == 1){
             // lets handle the upwards neighbor first
             int neighborUp = rank - 1;
@@ -215,10 +237,17 @@ int main(int argc, char **argv){
 
             }
             
-
+            
             MPI_Gatherv(&region.data[startSendingIndex], localCount, rowOfN, 
                             &world.data[0], recvCounts, recvDispls, rowOfN, 0, MPI_COMM_WORLD);
             
+            #ifdef VERIFY
+            if(iteration != 0){
+                // old world is empty, so just copy it
+                briansConfrimation(lastWorld, world);
+            }
+            lastWorld = world.clone();
+            #endif
             cv::imshow("Brain", world);
 
             cv::waitKey(2);
@@ -228,6 +257,11 @@ int main(int argc, char **argv){
         }
 
         
+    }
+
+    double endTime = MPI_Wtime();
+    if(rank == 0){
+        std::cout << "Time taken for simulation is " << endTime - startTime << " seconds" << std::endl;
     }
     /*
     for(int i = 0; i < rows; i++){
